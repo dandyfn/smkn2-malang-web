@@ -1,26 +1,65 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 20s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes waveLeft {
+  0% { stroke-dashoffset: 1000; opacity: 0.3; }
+  50% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: -1000; opacity: 0.3; }
+}
+
+@keyframes waveRight {
+  0% { stroke-dashoffset: -1000; opacity: 0.3; }
+  50% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 1000; opacity: 0.3; }
+}
+
+@keyframes pulseCenter {
+  0%, 100% { transform: scale(0.85); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; filter: drop-shadow(0 0 10px #fbbf24); }
+}
+
+.draw-wave-left {
+  stroke-dasharray: 1000;
+  animation: waveLeft 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.draw-wave-right {
+  stroke-dasharray: 1000;
+  animation: waveRight 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.center-node {
+  transform-origin: center;
+  animation: pulseCenter 2.2s ease-in-out infinite;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-slide-right {
+  animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
