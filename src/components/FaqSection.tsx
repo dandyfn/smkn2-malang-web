@@ -2,29 +2,33 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
+import Testimoni from "@/components/Testimoni";
 
 export default function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [progress, setProgress] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
+      if (!trackRef.current) return;
+      const rect = trackRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
+      const totalDistance = rect.height - windowHeight;
 
-      // Hitung progress hanya ketika bagian ini mulai masuk viewport
-      const totalScrollable = rect.height - windowHeight;
-      const currentScroll = -rect.top;
+      if (totalDistance <= 0) return;
 
-      let p = currentScroll / totalScrollable;
-      p = Math.max(0, Math.min(1, p)); // Batasi rentang 0 sampai 1
+      // Hitung progress saat track mulai terkunci di top <= 0
+      const currentPosition = -rect.top;
+      let p = currentPosition / totalDistance;
+      p = Math.max(0, Math.min(1, p));
+
       setProgress(p);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -43,18 +47,26 @@ export default function FaqSection() {
     },
   ];
 
-  // Pergeseran Murni Horizontal: 100% (luar kanan) -> 0% (menutup sempurna)
   const translateX = (1 - progress) * 100;
 
   return (
-    <div ref={containerRef} className="relative z-40 h-[200vh]">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+    // Track panjang 250vh untuk memberi ruang scroll horizontal
+    <div ref={trackRef} className="relative h-[250vh] w-full bg-slate-950">
+      {/* Sticky Container Tepat Mengunci di Top 0 Layar */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden z-30">
+        
+        {/* Layer 1: Testimoni (Diam di belakang) */}
+        <div className="absolute inset-0 w-full h-full z-10 flex items-center justify-center">
+          <Testimoni />
+        </div>
+
+        {/* Layer 2: Pusat Informasi FAQ (Meluncur Horizontal Menutupi Testimoni) */}
         <section
           style={{
-            transform: `translateX(${translateX}%)`,
+            transform: `translate3d(${translateX}%, 0px, 0px)`,
+            willChange: "transform",
           }}
-          id="faq"
-          className="w-full h-full bg-slate-950 text-white px-6 flex flex-col justify-center border-l-4 border-amber-400 shadow-[-30px_0_60px_rgba(0,0,0,0.95)]"
+          className="absolute inset-0 w-full h-full bg-slate-950 text-white px-6 flex flex-col justify-center z-20 shadow-[-30px_0_60px_rgba(0,0,0,0.95)]"
         >
           <div className="max-w-4xl mx-auto w-full">
             <div className="text-center mb-12">
@@ -97,6 +109,7 @@ export default function FaqSection() {
             </div>
           </div>
         </section>
+
       </div>
     </div>
   );

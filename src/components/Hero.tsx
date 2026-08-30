@@ -1,17 +1,22 @@
 "use client";
 
+import Image from "next/image";
 import { ArrowDown, Play } from "lucide-react";
 
 export default function Hero() {
   return (
     <div className="relative min-h-[170vh]">
       {/* Background Image Sticky Parallax */}
-      <div className="sticky top-20 h-[calc(100vh-5rem)] w-full overflow-hidden -z-10">
+      <div className="sticky top-20 h-[calc(100vh-5rem)] w-full overflow-hidden z-0 relative">
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-900/40 z-10" />
-        <img
-          src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=80"
+        <Image
+          src="/images/hero-bg.png"
           alt="Gedung SMKN 2 Malang"
-          className="w-full h-full object-cover object-center scale-105"
+          fill
+          priority
+          sizes="100vw"
+          quality={85}
+          className="object-cover object-center scale-105"
         />
       </div>
 

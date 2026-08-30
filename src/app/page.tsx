@@ -4,7 +4,6 @@ import MitraIndustri from "@/components/MitraIndustri";
 import Sambutan from "@/components/Sambutan";
 import Berita from "@/components/Berita";
 import DividerWave from "@/components/DividerWave";
-import Testimoni from "@/components/Testimoni";
 import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
 
@@ -17,7 +16,7 @@ export default function Home() {
       <Sambutan />
       <Berita />
       <DividerWave />
-      <Testimoni />
+      {/* Testimoni SUDAH ADA di dalam FaqSection, jadi cukup panggil FaqSection saja */}
       <FaqSection />
       <Footer />
     </main>
