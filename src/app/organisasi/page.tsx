@@ -15,7 +15,10 @@ import {
   ShieldCheck,
   Building2,
   HeartHandshake,
-  User
+  User,
+  ZoomIn,     // <-- Tambahkan ini
+  ZoomOut,    // <-- Tambahkan ini
+  RotateCcw   // <-- Tambahkan ini
 } from "lucide-react";
 
 // Data Guru & Staf SMKN 2 Malang
@@ -114,6 +117,13 @@ const DAFTAR_KEJURUAN = [
 ];
 
 export default function OrganisasiPage() {
+
+  const [scale, setScale] = useState(1);
+
+  const handleZoomIn = () => setScale((prev) => Math.min(prev + 0.25, 2.5));
+  const handleZoomOut = () => setScale((prev) => Math.max(prev - 0.25, 0.75));
+  const handleResetZoom = () => setScale(1);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedKejuruan, setSelectedKejuruan] = useState("Semua Kejuruan");
 
@@ -206,29 +216,73 @@ export default function OrganisasiPage() {
           </div>
         </section>
 
-        {/* GAMBAR STRUKTUR ORGANISASI */}
+        {/* GAMBAR STRUKTUR ORGANISASI INTERAKTIF */}
         <section className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
-          <div className="flex items-center gap-2 text-amber-400 font-bold text-sm uppercase tracking-wider pb-3 border-b border-slate-800">
-            <Award className="w-5 h-5" />
-            <span>Struktur Manajerial & Organisasi Sekolah</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm uppercase tracking-wider">
+              <Award className="w-5 h-5" />
+              <span>Struktur Manajerial & Organisasi Sekolah</span>
+            </div>
+
+            {/* TOMBOL KONTROL ZOOM */}
+            <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition"
+                title="Zoom Out"
+              >
+                <ZoomOut className="w-4 h-4" />
+              </button>
+              
+              <span className="text-xs font-mono font-bold text-amber-400 px-2 min-w-[50px] text-center">
+                {Math.round(scale * 100)}%
+              </span>
+
+              <button
+                type="button"
+                onClick={handleZoomIn}
+                className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition"
+                title="Zoom In"
+              >
+                <ZoomIn className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={handleResetZoom}
+                className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition border-l border-slate-800 pl-2"
+                title="Reset Zoom"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-          
-          <div className="relative w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex justify-center items-center min-h-[300px]">
-            <img
-              src="/images/struktur-organisasi.png"
-              alt="Struktur Organisasi SMKN 2 Malang"
-              className="w-full h-auto object-contain max-h-[500px]"
-              onError={(e) => {
-                (e.target as HTMLElement).style.display = 'none';
-                (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
-              }}
-            />
-            <div className="hidden flex-col items-center justify-center p-8 text-center text-slate-400 space-y-2">
-              <Briefcase className="w-12 h-12 text-amber-400" />
-              <p className="text-sm font-semibold text-slate-200">Bagan Struktur Organisasi</p>
-              <p className="text-xs text-slate-500">
-                Unggah berkas gambar ke <code className="text-amber-400 font-bold">public/images/struktur-organisasi.png</code>
-              </p>
+
+          {/* KONTAINER GAMBAR DENGAN SCROLL & ZOOM */}
+          <div className="relative w-full rounded-2xl overflow-auto border border-slate-800 bg-slate-950 min-h-[400px] max-h-[600px] flex justify-center items-center">
+            <div 
+              className="w-full h-full transition-transform duration-200 ease-out origin-center flex items-center justify-center"
+              style={{ transform: `scale(${scale})` }}
+            >
+              <img
+                src="/images/baganorganisasi.jpeg"
+                alt="Struktur Organisasi SMKN 2 Malang"
+                className="w-full h-full object-fill min-h-[400px]"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const fallbackEl = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (fallbackEl) fallbackEl.classList.remove('hidden');
+                }}
+              />
+              
+              <div className="hidden flex-col items-center justify-center p-8 text-center text-slate-400 space-y-2">
+                <Briefcase className="w-12 h-12 text-amber-400" />
+                <p className="text-sm font-semibold text-slate-200">Bagan Struktur Organisasi Tidak Ditemukan</p>
+                <p className="text-xs text-slate-500">
+                  Pastikan file tersimpan di <code className="text-amber-400 font-bold">public/images/baganorganisasi.jpeg</code>
+                </p>
+              </div>
             </div>
           </div>
         </section>

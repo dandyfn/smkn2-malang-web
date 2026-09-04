@@ -70,14 +70,26 @@ export default function PrestasiPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 relative overflow-hidden">
+      
+      {/* CORAK GAMBAR 2D BAKAT & PRESTASI (SVG DOODLE PATTERN) */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='260' height='260' viewBox='0 0 260 260' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f59e0b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3C!-- 1. PIALA JUARA KELAS DENGAN BINTANG --%3E%3Cpath d='M20 20 h50 v25 a25 25 0 0 1 -50 0 z' fill='%23f59e0b' fill-opacity='0.15' /%3E%3Cpath d='M12 20 h8 M70 20 h8 M12 20 a12 12 0 0 0 12 12 M78 20 a12 12 0 0 1 -12 12 M45 45 v16 M30 61 h30 M22 69 h46' /%3E%3Cpath d='M45 27 l2 4 h4 l-3 3 l1 4 l-4 -2 l-4 2 l1 -4 l-3 -3 h4 z' fill='%23d97706' stroke='none' /%3E%3C!-- 2. BOLA SEPAK --%3E%3Ccircle cx='195' cy='45' r='20' /%3E%3Cpolygon points='195,33 204,40 200,51 190,51 186,40' fill='%23f59e0b' fill-opacity='0.3' /%3E%3Cpath d='M195 33 L195 25 M204 40 L212 36 M200 51 L206 60 M190 51 L184 60 M186 40 L178 36' /%3E%3C!-- 3. MEDALI PENGHARGAAN --%3E%3Ccircle cx='45' cy='185' r='18' fill='%23f59e0b' fill-opacity='0.2' /%3E%3Cpath d='M32 145 L41 168 M58 145 L49 168' /%3E%3Cpath d='M45 176 L48 182 L55 183 L50 188 L51 195 L45 191 L39 195 L40 188 L35 183 L42 182 Z' fill='%23f59e0b' stroke='none' /%3E%3C!-- 4. BOLA BASKET --%3E%3Ccircle cx='190' cy='190' r='20' /%3E%3Cpath d='M170 190 h40 M190 170 v40 M175 176 a20 20 0 0 1 0 28 M205 176 a20 20 0 0 0 0 28' /%3E%3C!-- 5. TOPENG MALANGAN / KESENIAN --%3E%3Cpath d='M115 110 c0-15 30-15 30 0 c0 20 -15 32 -15 32 s-15-12 -15-32 z' fill='%23f59e0b' fill-opacity='0.25' /%3E%3Ccircle cx='123' cy='105' r='2.5' fill='%23d97706' /%3E%3Ccircle cx='137' cy='105' r='2.5' fill='%23d97706' /%3E%3Cpath d='M123 124 q7 6 14 0' /%3E%3C!-- 6. PALET LUKIS & KUAS --%3E%3Cpath d='M110 30 c15-10 35 0 30 20 c-3 12 -15 15 -20 10 c-5-5 -10 5 -20 0 c-8-4 -5-20 10-30 z' /%3E%3Ccircle cx='120' cy='28' r='2' fill='%23f59e0b' /%3E%3Ccircle cx='130' cy='32' r='2' fill='%23f59e0b' /%3E%3Cline x1='132' y1='20' x2='150' y2='4' stroke-width='3' /%3E%3C!-- 7. GUITAR / MUSIK --%3E%3Cpath d='M30 105 a8 8 0 0 1 12 10 a12 12 0 0 1 -6 14 a12 12 0 0 1 -12 -6 a8 8 0 0 1 6 -18 z' /%3E%3Cline x1='38' y1='108' x2='60' y2='86' stroke-width='3' /%3E%3C!-- 8. BUKU & KACA PEMBESAR --%3E%3Cpath d='M190 100 h35 v24 h-35 z M195 95 h25 v5 h-25 z' /%3E%3Ccircle cx='235' cy='135' r='8' /%3E%3Cline x1='241' y1='141' x2='250' y2='150' stroke-width='3' /%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: "260px 260px"
+          }}
+        />
+      </div>
+
       <Header />
 
-      <main className="flex-1 py-12 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-12">
+      <main className="flex-1 py-12 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-12 relative z-10">
         
         {/* HEADER SECTION */}
         <section className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="text-xs font-bold text-amber-700 uppercase tracking-widest bg-amber-100 px-4 py-1.5 rounded-full border border-amber-200">
+          <span className="text-xs font-black text-amber-900 uppercase tracking-widest bg-amber-400/30 px-4 py-1.5 rounded-full border border-amber-400 shadow-xs inline-block">
             PENCAPAIAN & PROSES
           </span>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900">
@@ -89,7 +101,7 @@ export default function PrestasiPage() {
         </section>
 
         {/* SEARCH & FILTER */}
-        <section className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <section className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 shadow-xs">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
@@ -108,7 +120,7 @@ export default function PrestasiPage() {
                 onClick={() => setFilterKategori(kat)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
                   filterKategori === kat
-                    ? "bg-amber-500 text-slate-950 shadow-sm"
+                    ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
               >
@@ -124,7 +136,7 @@ export default function PrestasiPage() {
             <Link
               key={item.id}
               href={`/prestasi/${item.id}`}
-              className="group bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              className="group bg-white/95 backdrop-blur-xs border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 hover:border-amber-400 transition-all duration-300 flex flex-col"
             >
               {/* Gambar Thumbnail */}
               <div className="relative h-52 bg-slate-100 overflow-hidden">
