@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { ChevronDown, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname(); // Untuk mendeteksi path/halaman aktif secara otomatis
 
   return (
     <>
@@ -47,58 +49,107 @@ export default function Header() {
 
           {/* Navigasi Desktop */}
           <nav className="hidden md:flex items-center gap-1 font-semibold text-sm">
-            {/* Link Beranda Menggunakan Next.js Link */}
+            {/* Link Beranda */}
             <Link 
               href="/" 
-              className="px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-100 transition"
+              className={`px-4 py-2 rounded-xl transition ${
+                pathname === "/" 
+                  ? "text-amber-600 font-bold bg-amber-50" 
+                  : "text-slate-700 hover:text-amber-600 hover:bg-slate-100"
+              }`}
             >
               Beranda
             </Link>
 
             {/* Dropdown Tentang */}
             <div className="relative group">
-              <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 group-hover:bg-slate-100 transition">
+              <button 
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl transition ${
+                  pathname.startsWith("/profil") || pathname.startsWith("/organisasi") || pathname.startsWith("/prestasi")
+                    ? "text-amber-600 font-bold bg-amber-50"
+                    : "text-slate-700 hover:text-amber-600 group-hover:bg-slate-100"
+                }`}
+              >
                 <span>Tentang</span>
                 <ChevronDown className="w-4 h-4 text-slate-500 group-hover:text-amber-600 transition-transform duration-200 group-hover:rotate-180" />
               </button>
+              
               <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 w-56">
                 <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-xl ring-1 ring-black/5">
-                  <Link href="/profil" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-amber-500 transition">
+                  
+                  {/* 01 Profil Singkat */}
+                  <Link 
+                    href="/profil" 
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
+                      pathname === "/profil"
+                        ? "text-amber-600 bg-amber-50/50 border-amber-500 font-bold"
+                        : "text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-transparent hover:border-amber-500"
+                    }`}
+                  >
                     <span className="text-xs font-bold text-amber-600">01</span> Profil Singkat
                   </Link>
+
+                  {/* 02 Organisasi */}
                   <Link 
                     href="/organisasi" 
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-transparent hover:border-amber-500 transition"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
+                      pathname === "/organisasi"
+                        ? "text-amber-600 bg-amber-50/50 border-amber-500 font-bold"
+                        : "text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-transparent hover:border-amber-500"
+                    }`}
                   >
                     <span className="text-xs font-bold text-amber-600">02</span> Organisasi
                   </Link>
-                  <a href="/#prestasi" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 hover:border-l-2 hover:border-amber-500 transition">
+
+                  {/* 03 Prestasi */}
+                  <Link 
+                    href="/prestasi" 
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
+                      pathname === "/prestasi"
+                        ? "text-amber-600 bg-amber-50/50 border-amber-500 font-bold"
+                        : "text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-transparent hover:border-amber-500"
+                    }`}
+                  >
                     <span className="text-xs font-bold text-amber-600">03</span> Prestasi
-                  </a>
+                  </Link>
+
                 </div>
               </div>
             </div>
 
             {/* Dropdown Akademik */}
-            <div className="relative group">
-              <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 group-hover:bg-slate-100 transition">
-                <span>Akademik</span>
-                <ChevronDown className="w-4 h-4 text-slate-500 group-hover:text-amber-600 transition-transform duration-200 group-hover:rotate-180" />
-              </button>
-              <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 w-56">
-                <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-xl ring-1 ring-black/5">
-                  <a href="/#beasiswa" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 hover:border-l-2 hover:border-amber-500 transition">
-                    <span className="text-xs font-bold text-amber-600">01</span> Beasiswa
-                  </a>
-                  <a href="/#kalender" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 hover:border-l-2 hover:border-amber-500 transition">
-                    <span className="text-xs font-bold text-amber-600">02</span> Kalender Akademik
-                  </a>
-                  <a href="/#ekstrakurikuler" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 hover:border-l-2 hover:border-amber-500 transition">
-                    <span className="text-xs font-bold text-amber-600">03</span> Ekstrakurikuler
-                  </a>
-                </div>
-              </div>
-            </div>
+            {/* Dropdown Akademik */}
+<div className="relative group">
+  <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 group-hover:bg-slate-100 transition">
+    <span>Akademik</span>
+    <ChevronDown className="w-4 h-4 text-slate-500 group-hover:text-amber-600 transition-transform duration-200 group-hover:rotate-180" />
+  </button>
+  <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 w-56">
+    <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-xl ring-1 ring-black/5">
+      
+      <a href="/#beasiswa" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-transparent hover:border-amber-500 transition">
+        <span className="text-xs font-bold text-amber-600">01</span> Beasiswa
+      </a>
+
+      {/* 02 Kalender Akademik (Diubah ke <Link> mengarah ke /kalender) */}
+      <Link 
+        href="/kalender" 
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
+          pathname === "/kalender"
+            ? "text-amber-600 bg-amber-50/50 border-amber-500 font-bold"
+            : "text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-transparent hover:border-amber-500"
+        }`}
+      >
+        <span className="text-xs font-bold text-amber-600">02</span> Kalender Akademik
+      </Link>
+
+      <a href="/#ekstrakurikuler" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-transparent hover:border-amber-500 transition">
+        <span className="text-xs font-bold text-amber-600">03</span> Ekstrakurikuler
+      </a>
+
+      </div>
+      </div>
+      </div>
 
             <a href="/#keahlian" className="px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-100 transition">
               Konsentrasi Keahlian
