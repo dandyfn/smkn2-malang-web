@@ -118,42 +118,64 @@ export default function Header() {
             </div>
 
             {/* Dropdown Akademik */}
-            {/* Dropdown Akademik */}
-<div className="relative group">
-  <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 group-hover:bg-slate-100 transition">
-    <span>Akademik</span>
-    <ChevronDown className="w-4 h-4 text-slate-500 group-hover:text-amber-600 transition-transform duration-200 group-hover:rotate-180" />
-  </button>
-  <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 w-56">
-    <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-xl ring-1 ring-black/5">
-      
-      <a href="/#beasiswa" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-transparent hover:border-amber-500 transition">
-        <span className="text-xs font-bold text-amber-600">01</span> Beasiswa
-      </a>
+            <div className="relative group">
+              <button 
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl transition ${
+                  pathname.startsWith("/kalender") || pathname.startsWith("/ekstrakurikuler")
+                    ? "text-amber-600 font-bold bg-amber-50"
+                    : "text-slate-700 hover:text-amber-600 group-hover:bg-slate-100"
+                }`}
+              >
+                <span>Akademik</span>
+                <ChevronDown className="w-4 h-4 text-slate-500 group-hover:text-amber-600 transition-transform duration-200 group-hover:rotate-180" />
+              </button>
+              
+              <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 w-56">
+                <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-xl ring-1 ring-black/5">
+                  
+                  {/* 01 Beasiswa */}
+                  <a href="/#beasiswa" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-transparent hover:border-amber-500 transition">
+                    <span className="text-xs font-bold text-amber-600">01</span> Beasiswa
+                  </a>
 
-      {/* 02 Kalender Akademik (Diubah ke <Link> mengarah ke /kalender) */}
-      <Link 
-        href="/kalender" 
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
-          pathname === "/kalender"
-            ? "text-amber-600 bg-amber-50/50 border-amber-500 font-bold"
-            : "text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-transparent hover:border-amber-500"
-        }`}
-      >
-        <span className="text-xs font-bold text-amber-600">02</span> Kalender Akademik
-      </Link>
+                  {/* 02 Kalender Akademik */}
+                  <Link 
+                    href="/kalender" 
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
+                      pathname === "/kalender"
+                        ? "text-amber-600 bg-amber-50/50 border-amber-500 font-bold"
+                        : "text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-transparent hover:border-amber-500"
+                    }`}
+                  >
+                    <span className="text-xs font-bold text-amber-600">02</span> Kalender Akademik
+                  </Link>
 
-      <a href="/#ekstrakurikuler" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-transparent hover:border-amber-500 transition">
-        <span className="text-xs font-bold text-amber-600">03</span> Ekstrakurikuler
-      </a>
+                  {/* 03 Ekstrakurikuler (SEKARANG SUDAH MENGGUNAKAN <Link> KE /ekstrakurikuler) */}
+                  <Link 
+                    href="/ekstrakurikuler" 
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
+                      pathname.startsWith("/ekstrakurikuler")
+                        ? "text-amber-600 bg-amber-50/50 border-amber-500 font-bold"
+                        : "text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-transparent hover:border-amber-500"
+                    }`}
+                  >
+                    <span className="text-xs font-bold text-amber-600">03</span> Ekstrakurikuler
+                  </Link>
 
-      </div>
-      </div>
-      </div>
+                </div>
+              </div>
+            </div>
 
-            <a href="/#keahlian" className="px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-100 transition">
+            <Link
+              href="/konsentrasi-keahlian"
+              className={`px-4 py-2 rounded-xl transition ${
+                pathname.startsWith("/konsentrasi-keahlian")
+                  ? "text-amber-600 font-bold bg-amber-50"
+                  : "text-slate-700 hover:text-amber-600 hover:bg-slate-100"
+              }`}
+            >
               Konsentrasi Keahlian
-            </a>
+            </Link>
 
             <a href="/#fasilitas" className="px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-100 transition">
               Fasilitas
