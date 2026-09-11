@@ -177,13 +177,29 @@ export default function Header() {
               Konsentrasi Keahlian
             </Link>
 
-            <a href="/#fasilitas" className="px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-100 transition">
+            <Link
+              href="/fasilitas"
+              className={`px-4 py-2 rounded-xl transition ${
+                pathname.startsWith("/fasilitas")
+                  ? "text-amber-600 font-bold bg-amber-50"
+                  : "text-slate-700 hover:text-amber-600 hover:bg-slate-100"
+              }`}
+            >
               Fasilitas
-            </a>
+            </Link>
 
-            <a href="/#kontak" className="px-4 py-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-100 transition">
+            <Link
+              href="/kontak"
+              className={`px-4 py-2 rounded-xl transition ${
+                pathname.startsWith("/kontak")
+                  ? "text-amber-600 font-bold bg-amber-50"
+                  : "text-slate-700 hover:text-amber-600 hover:bg-slate-100"
+              }`}
+            >
               Kontak
-            </a>
+            </Link>
+
+
           </nav>
 
           {/* Tombol Portal PPDB */}
