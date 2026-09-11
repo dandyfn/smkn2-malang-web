@@ -8,6 +8,7 @@ export interface Ekstrakurikuler {
   pembina: string;
   kontak: string;
   deskripsi: string;
+  gambar?: string; // Ditambahkan agar mendukung gambar banner di halaman buku
   programKerja: string[];
   galeri: {
     foto: string;
@@ -27,6 +28,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Lapangan Indoor",
     pembina: "Ria Devi Nuryana, S.Pd",
     kontak: "085806019531",
+    gambar: "/images/pencaksilat.jpg",
     deskripsi: "Wadah olah raga dan olah jiwa melalui seni bela diri tradisional Indonesia untuk membentuk mental, kedisiplinan, serta karakter kepemimpinan siswa.",
     programKerja: [
       "Latihan fisik dan teknik dasar silat",
@@ -48,6 +50,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Kelas A.203",
     pembina: "Neni Triwidayanti, S.Pd, Gr",
     kontak: "081246028620",
+    gambar: "/images/vocal.jpg",
     deskripsi: "Mengembangkan olah vokal, harmonisasi suara, dan rasa percaya diri dalam bernyanyi secara kelompok dengan berbagai genre musik.",
     programKerja: [
       "Latihan teknik pernapasan & aransemen lagu",
@@ -69,6 +72,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Lapangan Indoor",
     pembina: "Fina Ristanti, S.Pd, Gr",
     kontak: "0895607998149",
+    gambar: "/images/pramuka.jpg",
     deskripsi: "Ekstrakurikuler wajib yang membina karakter mandiri, kecintaan alam, keterampilan survival, serta kepemimpinan generasi muda.",
     programKerja: [
       "Penerimaan Tamu Ambalan",
@@ -90,6 +94,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "SM Futsal",
     pembina: "Ria Devi Nuryana, S.Pd",
     kontak: "085806019531",
+    gambar: "/images/futsal.jpg",
     deskripsi: "Mengasah ketangkasan fisik, taktik permainan tim, serta sportifitas tinggi dalam cabang olahraga futsal.",
     programKerja: [
       "Latihan fisik & penyusunan strategi tim",
@@ -110,6 +115,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Kelas P.105",
     pembina: "Istiqomah, S.Pd, Gr",
     kontak: "0895602917117",
+    gambar: "/images/dakwah.jpg",
     deskripsi: "Wadah pembinaan rohani Islam untuk memperdalam pemahaman agama, kepemimpinan Islam, serta kegiatan sosial kemasyarakatan.",
     programKerja: [
       "Kajian rutin mingguan",
@@ -131,6 +137,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Kelas A.205",
     pembina: "Neni Triwidayanti, S.Pd, Gr",
     kontak: "081246028620",
+    gambar: "/images/tari.jpg",
     deskripsi: "Melestarikan kekayaan budaya lewat eksplorasi gerak tari tradisional Nusantara hingga tari kreasi modern.",
     programKerja: [
       "Latihan koreografi tari daerah khas Jatim",
@@ -152,6 +159,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Lapangan Indoor",
     pembina: "Ria Devi Nuryana, S.Pd",
     kontak: "085806019531",
+    gambar: "/images/basket.jpg",
     deskripsi: "Mengembangkan kemampuan olah bola, stamina, kerjasama tim, serta mental bertanding di lapangan basket.",
     programKerja: [
       "Fundamental dribble, shooting, & defense",
@@ -173,6 +181,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Area Kantin",
     pembina: "Binti Sholekha, S.Pd I",
     kontak: "081317870613",
+    gambar: "/images/entreprenur.jpg",
     deskripsi: "Membangun jiwa kewirausahaan, pemikiran bisnis kreatif, strategi pemasaran, dan pembuatan produk bernilai jual bagi siswa.",
     programKerja: [
       "Praktik Bazar & Business Day",
@@ -193,6 +202,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Kelas A.201",
     pembina: "Binti Sholekha, S.Pd I",
     kontak: "081317870613",
+    gambar: "/images/multimedia.jpg",
     deskripsi: "Wadah eksplorasi dunia desain grafis, fotografi, videografi, serta editing konten kreatif berbasis teknologi.",
     programKerja: [
       "Pelatihan Desain Grafis & UI/UX",
@@ -214,6 +224,7 @@ export const DATA_EKSTRAKURIKULER: Ekstrakurikuler[] = [
     lokasi: "Hall SC Bandulan gg.8 (Jumat) / Balai RW Sumbersari (Sabtu)",
     pembina: "Ria Devi Nuryana, S.Pd",
     kontak: "085806019531",
+    gambar: "/images/badminton.jpg",
     deskripsi: "Melatih keahlian mengolah raket, refleks, strategi permainan tunggal dan ganda dalam cabang badminton.",
     programKerja: [
       "Latihan teknik footwork & stroke",
