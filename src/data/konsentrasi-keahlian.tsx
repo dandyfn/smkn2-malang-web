@@ -21,7 +21,7 @@ export const DATA_KONSENTRASI: KonsentrasiKeahlian[] = [
       "Membentuk tenaga profesional yang peka terhadap dinamika sosial. Peserta didik dibekali keterampilan pendampingan masyarakat, rehabilitasi sosial, dan manajemen penyelesaian masalah untuk siap berdedikasi di lembaga sosial pemerintah maupun NGO swasta.",
     prospekUtama: "Pekerja Sosial & Worker Community",
     toolsAndSkills: ["Case Management", "Assesment Sosial", "Pendampingan Komunitas", "Communication Skill"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/ps.jpg",
     materiPembelajaran: [
       "Dasar-Dasar Pekerjaan Sosial",
       "Teknik Pendampingan Komunitas & Keluarga",
@@ -48,7 +48,7 @@ export const DATA_KONSENTRASI: KonsentrasiKeahlian[] = [
       "Mengasah keterampilan hospitality yang komprehensif, mencakup front office, housekeeping, hingga manajemen operasional. Lulusan disiapkan menjadi tenaga profesional yang mampu memberikan layanan berstandar hotel berbintang kepada tamu dari berbagai belahan dunia.",
     prospekUtama: "Front Desk & Housekeeping Officer",
     toolsAndSkills: ["Front Office System", "Housekeeping Ops", "Guest Relation", "Hospitality Service"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/pht.jpg",
     materiPembelajaran: [
       "Operasional Front Office & Property Management System",
       "Housekeeping & Laundry Operations",
@@ -75,7 +75,7 @@ export const DATA_KONSENTRASI: KonsentrasiKeahlian[] = [
       "Mencetak asisten keperawatan dan caregiver yang terampil, sabar, dan beretika tinggi. Peserta didik menguasai ilmu kesehatan dasar dan teknik pendampingan pasien/lansia untuk siap berkarir di rumah sakit, klinik kesehatan, maupun layanan home care.",
     prospekUtama: "Asisten Keperawatan & Caregiver",
     toolsAndSkills: ["Tanda Vital & CPR", "Caregiving & Eldercare", "Sterilisasi Medis", "Etika Keperawatan"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/lpkc.jpg",
     materiPembelajaran: [
       "Kebutuhan Dasar Manusia & Keperawatan Dasar",
       "Anatomi Fisiologi & Farmakologi Dasar",
@@ -102,7 +102,7 @@ export const DATA_KONSENTRASI: KonsentrasiKeahlian[] = [
       "Menyiapkan ahli pariwisata yang kompeten dalam merancang paket perjalanan, manajemen ticketing, dan pemanduan wisata (tour guiding). Kami mencetak lulusan yang siap menjadi penggerak industri pariwisata lokal hingga internasional dengan standar pelayanan prima.",
     prospekUtama: "Tour Planner & Travel Consultant",
     toolsAndSkills: ["Tour Guiding", "Ticketing System", "Itinerary Planning", "Public Speaking"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/ulw.jpg",
     materiPembelajaran: [
       "Perencanaan Paket Wisata & Guiding Technique",
       "Reservasi & Ticketing Penerbangan/Kereta",
@@ -129,7 +129,7 @@ export const DATA_KONSENTRASI: KonsentrasiKeahlian[] = [
       "Mengembangkan keahlian tata boga dari pengolahan makanan nusantara hingga kontinental. Siswa dilatih menguasai standar kebersihan (sanitation & hygiene), kreativitas penyajian, serta jiwa kewirausahaan unggul untuk industri restoran, perhotelan, dan katering.",
     prospekUtama: "Junior Chef & F&B Entrepreneur",
     toolsAndSkills: ["Indonesian & Western Cuisine", "Pastry & Bakery", "Food Safety (HACCP)", "Food Plating"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/kl.jpg",
     materiPembelajaran: [
       "Pengolahan Makanan Nusantara & Kontinental",
       "Pastry, Bakery, & Decoration Art",
@@ -156,7 +156,7 @@ export const DATA_KONSENTRASI: KonsentrasiKeahlian[] = [
       "Membekali siswa dengan kompetensi perakitan komputer, konfigurasi jaringan (LAN/WAN), hingga manajemen server dan keamanan data. Lulusan disiapkan untuk langsung menjawab tantangan era digital sebagai administrator jaringan dan teknisi IT yang andal.",
     prospekUtama: "Network Engineer & System Admin",
     toolsAndSkills: ["Cisco & Router Config", "Server Administration", "Network Security", "Fiber Optic"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/tkj.jpg",
     materiPembelajaran: [
       "Administrasi Infrastruktur Jaringan (Cisco/MikroTik)",
       "Administrasi Sistem Server (Linux & Windows Server)",

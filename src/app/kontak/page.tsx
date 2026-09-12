@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
@@ -19,11 +19,137 @@ export default function KontakPage() {
   const [subjekEmail, setSubjekEmail] = useState("");
   const [pesanEmail, setPesanEmail] = useState("");
 
-  // Nomor WhatsApp SMKN 2 Malang (Sesuaikan dengan nomor asli)
-  const noWhatsApp = "6281234567890"; 
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Nomor WhatsApp SMKN 2 Malang
+  const noWhatsApp = "6281234567890";
   const emailTujuan = "info@smkn2malang.sch.id";
 
-  // Handle Kirim WhatsApp (Membuka web/app WhatsApp)
+  // EFEK CANVAS NEURAL NETWORK (KUNING INTERAKTIF BACKGROUND TERANG)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId: number;
+
+    const resizeCanvas = () => {
+      canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
+      canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    const mouse = {
+      x: -1000,
+      y: -1000,
+      radius: 180,
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    };
+
+    const handleMouseLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+
+    const particleCount = Math.floor((canvas.width * canvas.height) / 12000);
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+    }> = [];
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        radius: Math.random() * 2 + 1.5,
+      });
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p, index) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < mouse.radius) {
+          const forceDirectionX = dx / distance;
+          const forceDirectionY = dy / distance;
+          const force = (mouse.radius - distance) / mouse.radius;
+
+          p.x += forceDirectionX * force * 3;
+          p.y += forceDirectionY * force * 3;
+        }
+
+        // Titik node kuning pekat agar kontras di latar putih
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(217, 119, 6, 0.75)"; // Amber-600
+        ctx.fill();
+
+        // Garis penghubung antar titik
+        for (let j = index + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const distanceP2P = Math.hypot(p.x - p2.x, p.y - p2.y);
+
+          if (distanceP2P < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            const alpha = (1 - distanceP2P / 120) * 0.3;
+            ctx.strokeStyle = `rgba(234, 179, 8, ${alpha})`; // Amber-500
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+
+        // Garis penghubung ke kursor mouse
+        if (distance < mouse.radius) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          const mouseAlpha = (1 - distance / mouse.radius) * 0.5;
+          ctx.strokeStyle = `rgba(217, 119, 6, ${mouseAlpha})`; // Amber-600
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
   const handleKirimWA = (e: React.FormEvent) => {
     e.preventDefault();
     if (!pesanWA.trim()) return;
@@ -31,7 +157,6 @@ export default function KontakPage() {
     window.open(url, "_blank");
   };
 
-  // Handle Kirim Email (Membuka mailto client)
   const handleKirimEmail = (e: React.FormEvent) => {
     e.preventDefault();
     if (!pesanEmail.trim()) return;
@@ -42,14 +167,25 @@ export default function KontakPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
-      <Header />
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 relative overflow-hidden">
+      
+      {/* CANVAS BACKGROUND NEURAL NETWORK */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-0 pointer-events-none opacity-80"
+      />
 
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-12 py-12 max-w-[1400px] mx-auto space-y-12">
+      {/* HEADER */}
+      <div className="relative z-50">
+        <Header />
+      </div>
+
+      {/* MAIN CONTENT */}
+      <main className="relative z-10 flex-1 w-full px-4 sm:px-6 lg:px-12 py-12 max-w-[1400px] mx-auto space-y-12">
         
         {/* HERO SECTION */}
         <div className="text-center space-y-3 max-w-3xl mx-auto pt-4">
-          <span className="text-xs font-black uppercase tracking-widest bg-amber-500/10 text-amber-600 border border-amber-500/20 px-4 py-1.5 rounded-full inline-flex items-center gap-2">
+          <span className="text-xs font-black uppercase tracking-widest bg-amber-500/10 text-amber-600 border border-amber-500/20 px-4 py-1.5 rounded-full inline-flex items-center gap-2 backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5" /> HUBUNGI KAMI
           </span>
           <h1 className="text-3xl sm:text-5xl font-black text-slate-900 leading-tight">
@@ -67,7 +203,7 @@ export default function KontakPage() {
           <div className="lg:col-span-5 space-y-6">
             
             {/* CARD DETAIL KONTAK */}
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
               <h2 className="text-xl font-extrabold text-slate-900 border-b border-slate-100 pb-4">
                 Kontak Resmi
               </h2>
@@ -121,7 +257,7 @@ export default function KontakPage() {
             </div>
 
             {/* CARD JAM OPERASIONAL */}
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+            <div className="bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-purple-500/10 text-purple-600 rounded-2xl">
                   <Clock className="w-5 h-5" />
@@ -153,7 +289,7 @@ export default function KontakPage() {
           </div>
 
           {/* KIRIM PESAN QUICK ACTION (RIGHT COLUMN) */}
-          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
+          <div className="lg:col-span-7 bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
             
             {/* PILIHAN 1: CHAT VIA WHATSAPP */}
             <div className="space-y-4">
@@ -180,7 +316,7 @@ export default function KontakPage() {
                   placeholder="Tulis pesan Anda untuk admin sekolah di sini..."
                   value={pesanWA}
                   onChange={(e) => setPesanWA(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition resize-none"
+                  className="w-full bg-slate-50/80 border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition resize-none"
                 />
                 <button
                   type="submit"
@@ -214,14 +350,14 @@ export default function KontakPage() {
                   placeholder="Subjek Email (Contoh: Pendaftaran / Kerjasama DUDI)"
                   value={subjekEmail}
                   onChange={(e) => setSubjekEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition"
+                  className="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition"
                 />
                 <textarea
                   rows={4}
                   placeholder="Isi pesan email..."
                   value={pesanEmail}
                   onChange={(e) => setPesanEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition resize-none"
+                  className="w-full bg-slate-50/80 border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition resize-none"
                 />
                 <button
                   type="submit"
@@ -239,7 +375,10 @@ export default function KontakPage() {
 
       </main>
 
-      <Footer />
+      {/* FOOTER */}
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 }

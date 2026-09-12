@@ -15,7 +15,7 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Menyediakan ribuan koleksi buku fisik, jurnal digital, serta ruang baca yang nyaman dan kondusif untuk mendukung kegiatan akademik siswa.",
     fiturUtama: ["E-Library & Akses Internet", "Ruang Baca AC", "Koleksi Buku Lengkap"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/perpustakaan.jpg",
   },
   {
     id: "kesehatan",
@@ -24,7 +24,7 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Ruang UKS yang dilengkapi dengan peralatan medis dasar, obat-obatan, serta tempat tidur penanganan awal bagi siswa yang membutuhkan penanganan kesehatan.",
     fiturUtama: ["Peralatan P3K Lengkap", "Tenaga / Tim Penjaga UKS", "Ruang Istirahat Nyaman"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/fasilitaskesehatan.jpg",
   },
   {
     id: "olahraga",
@@ -33,7 +33,7 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Lapangan serbaguna yang dapat digunakan untuk kegiatan olahraga basket, voli, futsal, serta kegiatan fisik siswa secara optimal.",
     fiturUtama: ["Lapangan Basket & Voli", "Peralatan Olahraga Lengkap", "Area Outdoor Luas"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/fasilitasolahraga.jpg",
   },
   {
     id: "parkir",
@@ -42,7 +42,7 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Lahan parkir kendaraan roda dua dan roda empat yang terorganisir dengan baik untuk kenyamanan seluruh warga sekolah.",
     fiturUtama: ["Sistem Parkir Teratur", "Kapasitas Luas", "Pengawasan Keamanan"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/parkir.jpg",
   },
   {
     id: "umum",
@@ -51,7 +51,7 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Meliputi toilet bersih berstandar sanitasi baik, tempat ibadah (masjid/mushola), serta ruang terbuka bersama untuk diskusi siswa.",
     fiturUtama: ["Mushola Bersih", "Toilet Terawat", "Ruang Terbuka Hijau"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/fasum.jpg",
   },
   {
     id: "flora-fauna",
@@ -60,7 +60,7 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Taman sekolah yang dikelilingi pepohonan hijau, tanaman hias, serta ekosistem ramah lingkungan yang menciptakan suasana belajar yang sejuk.",
     fiturUtama: ["Taman Rindang", "Area Green School", "Zona Edukasi Lingkungan"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/florafauna.jpg",
   },
   {
     id: "kantin",
@@ -69,7 +69,7 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Kantin sekolah yang bersih dengan jajaran stan makanan berstandar kesehatan (sehat dan bergizi) serta ruang makan bersama yang luas.",
     fiturUtama: ["Menu Sehat & Terjangkau", "Area Makan Luas", "Pengawasan Sanitasi"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/kantin.jpg",
   },
   {
     id: "keamanan",
@@ -78,6 +78,6 @@ export const DATA_FASILITAS: FasilitasItem[] = [
     deskripsi:
       "Didukung oleh petugas keamanan (Satpam) profesional dan pos penjagaan yang siap menjaga ketertiban serta keamanan lingkungan sekolah.",
     fiturUtama: ["Pos Satpam 24/7", "Akses Masuk Terkontrol", "Lingkungan Aman & Tertib"],
-    gambar: "/images/smkn2logo.png",
+    gambar: "/images/keamanan.jpg",
   },
 ];

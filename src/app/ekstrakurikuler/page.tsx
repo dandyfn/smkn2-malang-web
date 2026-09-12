@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -8,6 +8,136 @@ import { DATA_EKSTRAKURIKULER } from "@/data/ekstrakurikuler";
 import { Search, Calendar, MapPin, User, ArrowRight, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
+
+// KOMPONEN BACKGROUND NEURAL NETWORK ANIMASI (Warna Kustom: #251FBC)
+function NeuralNetworkBackground() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    // Posisi awal Mouse (di luar layar)
+    const mouse = {
+      x: -1000,
+      y: -1000,
+      radius: 180, // Jangkauan pergerakan mouse
+    };
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+
+    const handleMouseLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+
+    // Membuat node/titik-titik
+    const nodeCount = Math.floor((width * height) / 12000);
+    const nodes: Array<{ x: number; y: number; vx: number; vy: number; radius: number }> = [];
+
+    for (let i = 0; i < nodeCount; i++) {
+      nodes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        radius: Math.random() * 2 + 1.5,
+      });
+    }
+
+    // Loop animasi
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Update & Gambar Titik (Nodes)
+      nodes.forEach((node, i) => {
+        node.x += node.vx;
+        node.y += node.vy;
+
+        // Pantulan saat menabrak batas layar
+        if (node.x < 0 || node.x > width) node.vx *= -1;
+        if (node.y < 0 || node.y > height) node.vy *= -1;
+
+        // Gambar titik menggunakan warna Hex #251FBC (RGB: 37, 31, 188)
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(37, 31, 188, 0.75)";
+        ctx.fill();
+
+        // Hubungkan antar titik
+        for (let j = i + 1; j < nodes.length; j++) {
+          const otherNode = nodes[j];
+          const dx = node.x - otherNode.x;
+          const dy = node.y - otherNode.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = 130;
+
+          if (distance < maxDistance) {
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(otherNode.x, otherNode.y);
+            const alpha = (1 - distance / maxDistance) * 0.35;
+            ctx.strokeStyle = `rgba(37, 31, 188, ${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+
+        // Hubungkan titik ke pergerakan MOUSE
+        const dxMouse = node.x - mouse.x;
+        const dyMouse = node.y - mouse.y;
+        const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+
+        if (distMouse < mouse.radius) {
+          ctx.beginPath();
+          ctx.moveTo(node.x, node.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          const alphaMouse = (1 - distMouse / mouse.radius) * 0.55;
+          ctx.strokeStyle = `rgba(37, 31, 188, ${alphaMouse})`;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-0"
+    />
+  );
+}
 
 export default function EkstrakurikulerBookPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,8 +152,6 @@ export default function EkstrakurikulerBookPage() {
     );
   });
 
-  // Halaman 0 adalah Sampul/Pengenalan (Sisi Kiri = Teks Sambutan, Sisi Kanan = Ekskul Pertama)
-  // Total lembaran buku yang bisa dibolak-balik
   const totalPages = filteredData.length > 0 ? filteredData.length : 1;
 
   const handleNext = () => {
@@ -41,11 +169,13 @@ export default function EkstrakurikulerBookPage() {
   const activeEkskul = filteredData[currentPage];
 
   return (
-    
-    <div className="min-h-screen flex flex-col bg-slate-100 text-slate-800 relative overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white text-slate-800 relative overflow-x-hidden">
+      {/* BACKGROUND NEURAL NETWORK INTERAKTIF (#251FBC) */}
+      <NeuralNetworkBackground />
+
       <Header />
 
-      <main className="flex-1 py-8 px-4 sm:px-8 max-w-6xl mx-auto w-full flex flex-col items-center justify-center space-y-6">
+      <main className="flex-1 py-8 px-4 sm:px-8 max-w-6xl mx-auto w-full flex flex-col items-center justify-center space-y-6 z-10 relative">
         
         {/* BAR PENCARIAN */}
         <div className="w-full max-w-xl relative">
@@ -56,16 +186,16 @@ export default function EkstrakurikulerBookPage() {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(0); // Reset ke halaman awal saat mengetik pencarian
+              setCurrentPage(0);
             }}
-            className="w-full pl-12 pr-4 py-3 bg-slate-800/80 border border-slate-700 rounded-2xl text-sm text-white placeholder-slate-400 focus:outline-none focus:border-amber-400 transition"
+            className="w-full pl-12 pr-4 py-3 bg-slate-900/90 border border-slate-700/80 rounded-2xl text-sm text-white placeholder-slate-400 focus:outline-none focus:border-amber-400 shadow-xl transition"
           />
         </div>
 
         {/* BUKU INTERAKTIF CONTAINER */}
         <div className="relative w-full flex items-center justify-center my-4">
           
-          {/* TOMBOL NAVIGASI KIRI (PREVIOUS PAGE) */}
+          {/* TOMBOL NAVIGASI KIRI */}
           <button
             onClick={handlePrev}
             disabled={currentPage === 0}
@@ -80,35 +210,24 @@ export default function EkstrakurikulerBookPage() {
           {/* AREA FISIK BUKU */}
           <div className="w-full max-w-4xl bg-slate-950 border border-slate-800 rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row min-h-[520px] divide-y md:divide-y-0 md:divide-x divide-slate-800">
             
-            {/* SISI KIRI BUKU (STATIS DI SETIAP HALAMAN) */}
-            <div className="w-full md:w-1/2 p-4 sm:p-6 flex flex-col justify-between relative bg-slate-900/50 rounded-2xl md:rounded-r-none">
-            
-            <div className="space-y-6 my-auto text-left">
+            {/* SISI KIRI BUKU */}
+            <div className="w-full md:w-1/2 p-4 sm:p-6 flex flex-col justify-center relative bg-slate-900/50 rounded-2xl md:rounded-r-none">
+              <div className="space-y-6 text-left">
                 <span className="text-[11px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-3 py-1.5 rounded-full border border-amber-400/30 inline-flex items-center gap-2">
-                <BookOpen className="w-3.5 h-3.5" /> KATALOG DIGITAL
+                  <BookOpen className="w-3.5 h-3.5" /> KATALOG DIGITAL
                 </span>
                 <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-                Ekstrakurikuler <br />
-                <span className="text-amber-400">SMKN 2 Malang</span>
+                  Ekstrakurikuler <br />
+                  <span className="text-amber-400">SMKN 2 Malang</span>
                 </h1>
                 <p className="text-slate-300 text-sm leading-relaxed">
-                Temukan kegiatan non-akademik sesuai passion dan minat bakatmu. Kembangkan potensi diri dan ukir prestasi bersama pendamping profesional.
+                  Temukan kegiatan non-akademik sesuai passion dan minat bakatmu. Kembangkan potensi diri dan ukir prestasi bersama pendamping profesional.
                 </p>
-                <div className="pt-4 text-xs text-slate-400 flex items-center gap-2 border-t border-slate-800">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                Gunakan tombol navigasi di samping untuk membalik halaman.
-                </div>
+              </div>
             </div>
 
-            {/* INDIKATOR NOMOR HALAMAN BUKU (SISI KIRI) */}
-            <div className="text-[11px] font-bold text-slate-500 pt-4 text-left">
-                Halaman {currentPage * 2 + 1} dari {totalPages * 2}
-            </div>
-            </div>
-
-            {/* SISI KANAN BUKU (KARTU EKSKUL INTERAKTIF) */}
-            <div className="w-full md:w-1/2 p-4 sm:p-6 flex flex-col justify-between relative bg-slate-900/30 rounded-2xl md:rounded-l-none">
-              
+            {/* SISI KANAN BUKU */}
+            <div className="w-full md:w-1/2 p-4 sm:p-6 flex flex-col justify-center relative bg-slate-900/30 rounded-2xl md:rounded-l-none">
               <AnimatePresence mode="wait">
                 {activeEkskul ? (
                   <motion.div
@@ -178,16 +297,11 @@ export default function EkstrakurikulerBookPage() {
                   </div>
                 )}
               </AnimatePresence>
-
-              {/* INDIKATOR NOMOR HALAMAN BUKU (SISI KANAN) */}
-              <div className="text-[11px] font-bold text-slate-500 pt-4 text-right">
-                Halaman {currentPage * 2 + 2} dari {totalPages * 2}
-              </div>
             </div>
 
           </div>
 
-          {/* TOMBOL NAVIGASI KANAN (NEXT PAGE) */}
+          {/* TOMBOL NAVIGASI KANAN */}
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages - 1 || filteredData.length === 0}
