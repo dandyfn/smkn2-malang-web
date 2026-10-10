@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { 
   ArrowLeft, Trash2, Newspaper, Bold, Italic, 
   Underline as UnderlineIcon, List, ListOrdered, 
-  Heading1, Heading2, Heading3, Quote, Link2, Image as ImageIcon, Sparkles, Edit3, X, Save, Upload, Loader2, Maximize2
+  Heading1, Heading2, Heading3, Quote, Link2, Image as ImageIcon, Sparkles, Edit3, X, Save, Upload, Loader2, Maximize2, Undo, Redo
 } from "lucide-react";
 import Link from "next/link";
 import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
@@ -27,7 +27,7 @@ interface Berita {
   created_at: string;
 }
 
-// Komponen React untuk merender Gambar + Tombol Kontrol langsung di dalam editor
+// Komponen React untuk merender Gambar + Tombol Kontrol Ukuran di dalam Editor
 const ComponentGambar = (props: any) => {
   const { node, updateAttributes, deleteNode } = props;
   const width = node.attrs.width || "30%";
@@ -53,7 +53,6 @@ const ComponentGambar = (props: any) => {
           <span className="text-[10px] text-blue-400 font-bold uppercase flex items-center gap-1 mr-1">
             <Maximize2 className="w-3 h-3" /> Ukuran:
           </span>
-          {/* Array Ukuran Diperbarui: 10%, 20%, 30%, 40%, 50% */}
           {["10%", "20%", "30%", "40%", "50%"].map((pct) => (
             <button
               key={pct}
@@ -116,7 +115,7 @@ const CustomImage = ImageExtension.extend({
   },
 });
 
-// Toolbar Tiptap Editor Main Menu
+// Toolbar Tiptap Editor Main Menu (Lengkap dengan B, I, U, H1-H3, List, Blockquote, Undo/Redo, & Sisip Gambar)
 const MenuBar = ({ editor, bucketName }: { editor: any; bucketName: string }) => {
   const [uploadingContentImg, setUploadingContentImg] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -159,74 +158,118 @@ const MenuBar = ({ editor, bucketName }: { editor: any; bucketName: string }) =>
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 p-2 bg-slate-900 border-b border-slate-800 rounded-t-xl text-slate-300">
+    <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-900 border-b border-slate-800 rounded-t-xl text-slate-300">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`p-2 rounded hover:bg-slate-800 transition-colors ${editor.isActive("bold") ? "text-amber-400 bg-slate-800 font-bold" : ""}`}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("bold") ? "bg-blue-500/20 text-blue-400 font-bold" : ""}`}
         title="Bold"
       >
         <Bold className="w-4 h-4" />
       </button>
+
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={`p-2 rounded hover:bg-slate-800 transition-colors ${editor.isActive("italic") ? "text-amber-400 bg-slate-800" : ""}`}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("italic") ? "bg-blue-500/20 text-blue-400" : ""}`}
         title="Italic"
       >
         <Italic className="w-4 h-4" />
       </button>
+
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleUnderline().run()}
-        className={`p-2 rounded hover:bg-slate-800 transition-colors ${editor.isActive("underline") ? "text-amber-400 bg-slate-800" : ""}`}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("underline") ? "bg-blue-500/20 text-blue-400" : ""}`}
         title="Underline"
       >
         <UnderlineIcon className="w-4 h-4" />
       </button>
 
-      <div className="w-[1px] h-5 bg-slate-800 mx-1" />
+      <div className="w-[1px] h-4 bg-slate-800 mx-1" />
 
+      {/* Headings: H1, H2, H3 */}
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={`p-2 rounded hover:bg-slate-800 transition-colors ${editor.isActive("heading", { level: 1 }) ? "text-amber-400 bg-slate-800 font-bold" : ""}`}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("heading", { level: 1 }) ? "bg-blue-500/20 text-blue-400 font-bold" : ""}`}
         title="Heading 1"
       >
         <Heading1 className="w-4 h-4" />
       </button>
+
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        className={`p-2 rounded hover:bg-slate-800 transition-colors ${editor.isActive("heading", { level: 2 }) ? "text-amber-400 bg-slate-800 font-bold" : ""}`}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("heading", { level: 2 }) ? "bg-blue-500/20 text-blue-400 font-bold" : ""}`}
         title="Heading 2"
       >
         <Heading2 className="w-4 h-4" />
       </button>
 
-      <div className="w-[1px] h-5 bg-slate-800 mx-1" />
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("heading", { level: 3 }) ? "bg-blue-500/20 text-blue-400 font-bold" : ""}`}
+        title="Heading 3"
+      >
+        <Heading3 className="w-4 h-4" />
+      </button>
+
+      <div className="w-[1px] h-4 bg-slate-800 mx-1" />
 
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`p-2 rounded hover:bg-slate-800 transition-colors ${editor.isActive("bulletList") ? "text-amber-400 bg-slate-800" : ""}`}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("bulletList") ? "bg-blue-500/20 text-blue-400" : ""}`}
         title="Bullet List"
       >
         <List className="w-4 h-4" />
       </button>
+
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`p-2 rounded hover:bg-slate-800 transition-colors ${editor.isActive("orderedList") ? "text-amber-400 bg-slate-800" : ""}`}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("orderedList") ? "bg-blue-500/20 text-blue-400" : ""}`}
         title="Numbered List"
       >
         <ListOrdered className="w-4 h-4" />
       </button>
 
-      <div className="w-[1px] h-5 bg-slate-800 mx-1" />
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        className={`p-1.5 rounded hover:bg-slate-800 transition ${editor.isActive("blockquote") ? "bg-blue-500/20 text-blue-400" : ""}`}
+        title="Blockquote"
+      >
+        <Quote className="w-4 h-4" />
+      </button>
+
+      <div className="w-[1px] h-4 bg-slate-800 mx-1" />
+
+      {/* Undo & Redo */}
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().undo().run()}
+        className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition"
+        title="Undo"
+      >
+        <Undo className="w-4 h-4" />
+      </button>
+
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().redo().run()}
+        className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition"
+        title="Redo"
+      >
+        <Redo className="w-4 h-4" />
+      </button>
+
+      <div className="w-[1px] h-4 bg-slate-800 mx-1" />
 
       {/* Insert Gambar ke Konten */}
-      <label className="p-2 rounded hover:bg-slate-800 transition-colors cursor-pointer flex items-center gap-1 text-blue-400 hover:text-blue-300 font-semibold text-xs" title="Sisipkan Gambar ke Konten">
+      <label className="p-1.5 rounded hover:bg-slate-800 transition-colors cursor-pointer flex items-center gap-1 text-blue-400 hover:text-blue-300 font-semibold text-xs" title="Sisipkan Gambar ke Konten">
         {uploadingContentImg ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
@@ -242,10 +285,6 @@ const MenuBar = ({ editor, bucketName }: { editor: any; bucketName: string }) =>
           className="hidden"
         />
       </label>
-
-      <span className="text-[10px] text-slate-500 italic ml-auto hidden sm:inline">
-        *Arahkan kursor atau klik gambar untuk memilih ukuran
-      </span>
     </div>
   );
 };
@@ -426,7 +465,7 @@ export default function AdminBeritaPage() {
       <style jsx global>{`
         .editor-custom-styles h1 { font-size: 1.75rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; color: #f8fafc; }
         .editor-custom-styles h2 { font-size: 1.35rem; font-weight: 600; margin-top: 0.85rem; margin-bottom: 0.4rem; color: #f1f5f9; }
-        .editor-custom-styles h3 { font-size: 1.15rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.3rem; color: #e2e8f0; }
+        .editor-custom-styles h3 { font-size: 1.15rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.3rem; color: #cbd5e1; }
         .editor-custom-styles ul { list-style-type: disc; padding-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
         .editor-custom-styles ol { list-style-type: decimal; padding-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
         .editor-custom-styles blockquote { border-left: 4px solid #3b82f6; padding-left: 1rem; font-style: italic; color: #94a3b8; margin-top: 0.75rem; margin-bottom: 0.75rem; }

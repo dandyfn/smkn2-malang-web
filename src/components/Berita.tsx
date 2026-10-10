@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowRight, Calendar } from "lucide-react";
+import { ArrowRight, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 interface BeritaItem {
@@ -30,6 +30,7 @@ function getDirectImageUrl(url: string | undefined): string {
 export default function Berita() {
   const [beritaList, setBeritaList] = useState<BeritaItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchBerita = async () => {
@@ -46,9 +47,34 @@ export default function Berita() {
     fetchBerita();
   }, []);
 
+  // Fungsi untuk menggeser slider ke kiri/kanan sejauh lebar 1 card
+  const scroll = (direction: "left" | "right") => {
+    if (sliderRef.current) {
+      const { scrollLeft, clientWidth } = sliderRef.current;
+      // Geser kira-kira seukuran 1 item (1/3 dari total container)
+      const scrollAmount = clientWidth / 3;
+      sliderRef.current.scrollTo({
+        left: direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <section id="berita" className="relative z-20 bg-slate-900 text-white py-24 px-6 border-b border-slate-800 shadow-[0_-30px_60px_rgba(0,0,0,0.9)]">
+      {/* Hide Scrollbar Style */}
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+
       <div className="max-w-7xl mx-auto w-full">
+        {/* Header Section */}
         <div className="flex justify-between items-end mb-10">
           <div>
             <span className="text-xs font-black uppercase tracking-widest text-amber-400">
@@ -58,9 +84,30 @@ export default function Berita() {
               Berita Terbaru
             </h3>
           </div>
-          <a href="#" className="text-amber-400 font-bold text-sm hover:underline flex items-center gap-1">
-            Lihat Semua <ArrowRight className="w-4 h-4" />
-          </a>
+
+          <div className="flex items-center gap-4">
+            {/* Tombol Navigasi Panah Geser (Hanya aktif/muncul jika berita > 3) */}
+            {beritaList.length > 3 && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => scroll("left")}
+                  className="p-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-white transition active:scale-95"
+                  title="Geser Kiri"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => scroll("right")}
+                  className="p-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-white transition active:scale-95"
+                  title="Geser Kanan"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+
+        
+          </div>
         </div>
 
         {loading ? (
@@ -72,13 +119,21 @@ export default function Berita() {
         ) : beritaList.length === 0 ? (
           <p className="text-slate-500 text-sm italic">Belum ada berita yang dipublikasikan.</p>
         ) : (
-          <div className="grid md:grid-cols-3 gap-6">
+          /* Slider Container (Menggunakan Flex + Snap Scroll) */
+          <div
+            ref={sliderRef}
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth pb-4"
+          >
             {beritaList.map((item) => {
               const beritaUrl = `/berita/${item.slug || item.id}`;
               const imgSrc = getDirectImageUrl(item.banner_url || item.gambar_url);
 
               return (
-                <div key={item.id} className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl hover:border-amber-400/50 transition duration-300 flex flex-col justify-between group">
+                <div
+                  key={item.id}
+                  /* w-full md:w-[calc(33.333%-16px)] memastikan persis 3 item yang terlihat di desktop */
+                  className="w-full md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl hover:border-amber-400/50 transition duration-300 flex flex-col justify-between group"
+                >
                   <div>
                     {/* Link Gambar Banner */}
                     <Link href={beritaUrl} className="block overflow-hidden h-44 bg-slate-700 relative">
@@ -90,7 +145,6 @@ export default function Berita() {
                           crossOrigin="anonymous"
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                           onError={(e) => {
-                            // Fallback jika image gagal load
                             e.currentTarget.style.display = "none";
                           }}
                         />
