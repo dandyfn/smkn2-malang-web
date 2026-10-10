@@ -1,72 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { supabase } from "@/lib/supabase";
 import { 
   ChevronLeft, 
   ChevronRight, 
   Calendar as CalendarIcon, 
-  Plus, 
   X, 
   Clock, 
-  Tag,
-  Info
+  Info,
+  Loader2
 } from "lucide-react";
 
-// Tipe Data Event
 interface EventAkademik {
   id: string;
-  tanggal: string; // Format: YYYY-MM-DD
   judul: string;
+  tanggal: string; // YYYY-MM-DD
+  tanggal_selesai: string; // YYYY-MM-DD
   kategori: "Ujian" | "Kegiatan" | "Libur" | "Pengumuman";
-  waktu?: string;
+  jam_mulai?: string;
+  jam_selesai?: string;
   deskripsi?: string;
 }
 
-// Sample Data Awal Kalender Akademik
-const INITIAL_EVENTS: EventAkademik[] = [
-  {
-    id: "1",
-    tanggal: "2026-09-07",
-    judul: "Penilaian Tengah Semester (PTS) Ganjil",
-    kategori: "Ujian",
-    waktu: "07.00 - 12.00 WIB",
-    deskripsi: "Pelaksanaan PTS Ganjil untuk seluruh siswa kelas X, XI, dan XII."
-  },
-  {
-    id: "2",
-    tanggal: "2026-09-15",
-    judul: "Workshop Keahlian & Industri (Guru & Siswa)",
-    kategori: "Kegiatan",
-    waktu: "08.00 - 15.00 WIB",
-    deskripsi: "Peningkatan kompetensi keahlian bersama mitra industri nasional."
-  },
-  {
-    id: "3",
-    tanggal: "2026-09-28",
-    judul: "Libur Maulid Nabi Muhammad SAW",
-    kategori: "Libur",
-    waktu: "Seharian",
-    deskripsi: "Hari libur nasional keagamaan."
-  }
-];
-
 export default function KalenderAkademikPage() {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 8, 1)); // September 2026
-  const [events, setEvents] = useState<EventAkademik[]>(INITIAL_EVENTS);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [events, setEvents] = useState<EventAkademik[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDateEvents, setSelectedDateEvents] = useState<EventAkademik[] | null>(null);
   const [activeDateStr, setActiveDateStr] = useState<string>("");
-  
-  // State Form Simulasi Tambah Event (Admin)
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newDate, setNewDate] = useState("");
-  const [newCategory, setNewCategory] = useState<EventAkademik["kategori"]>("Kegiatan");
-  const [newTime, setNewTime] = useState("");
-  const [newDesc, setNewDesc] = useState("");
 
-  // Helper Tanggal
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("kalender")
+        .select("*")
+        .order("tanggal", { ascending: true });
+
+      if (!error && data) {
+        setEvents(data);
+      }
+      setLoading(false);
+    };
+
+    fetchEvents();
+  }, []);
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -78,49 +60,31 @@ export default function KalenderAkademikPage() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Minggu
 
-  // Navigasi Bulan
   const handlePrevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const handleNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
 
-  // Format Helper ke YYYY-MM-DD
   const formatDateString = (day: number) => {
     const m = (month + 1).toString().padStart(2, "0");
     const d = day.toString().padStart(2, "0");
     return `${year}-${m}-${d}`;
   };
 
-  // Handler Klik Tanggal
+  // Fungsi pengecekan apakah tanggal tertentu berada di dalam rentang agenda
+  const getEventsForDate = (dateStr: string) => {
+    return events.filter((e) => {
+      const start = e.tanggal;
+      const end = e.tanggal_selesai || e.tanggal;
+      return dateStr >= start && dateStr <= end;
+    });
+  };
+
   const handleDateClick = (day: number) => {
     const dateStr = formatDateString(day);
-    const dayEvents = events.filter((e) => e.tanggal === dateStr);
+    const dayEvents = getEventsForDate(dateStr);
     setActiveDateStr(`${day} ${monthNames[month]} ${year}`);
     setSelectedDateEvents(dayEvents);
   };
 
-  // Handler Tambah Event Baru (Simulasi)
-  const handleAddEvent = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle || !newDate) return;
-
-    const newEventItem: EventAkademik = {
-      id: Date.now().toString(),
-      judul: newTitle,
-      tanggal: newDate,
-      kategori: newCategory,
-      waktu: newTime || "Seharian",
-      deskripsi: newDesc || "Tidak ada deskripsi tambahan."
-    };
-
-    setEvents([...events, newEventItem]);
-    setShowAddModal(false);
-    // Reset Form
-    setNewTitle("");
-    setNewDate("");
-    setNewTime("");
-    setNewDesc("");
-  };
-
-  // Badge Kategori Styling
   const getBadgeStyle = (kategori: EventAkademik["kategori"]) => {
     switch (kategori) {
       case "Ujian":
@@ -140,10 +104,10 @@ export default function KalenderAkademikPage() {
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
         
-        {/* HEADER & SIMULASI TOMBOL TAMBAH AGENDA */}
+        {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+            <span className="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-200 inline-block">
               AKADEMIK & KEGIATAN
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
@@ -153,14 +117,6 @@ export default function KalenderAkademikPage() {
               Klik pada tanggal untuk melihat rincian agenda dan kegiatan sekolah.
             </p>
           </div>
-
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-2xl transition shadow-sm text-sm shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Agenda (Admin)</span>
-          </button>
         </div>
 
         {/* KALENDER INTERAKTIF */}
@@ -205,72 +161,79 @@ export default function KalenderAkademikPage() {
           </div>
 
           {/* GRID TANGGAL */}
-          <div className="grid grid-cols-7 auto-rows-fr gap-px bg-slate-100">
-            
-            {/* Slot Kosong Bulan Sebelumnya */}
-            {Array.from({ length: firstDayIndex }).map((_, idx) => (
-              <div key={`empty-${idx}`} className="bg-white min-h-[100px] sm:min-h-[120px] p-2 opacity-30 pointer-events-none" />
-            ))}
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-24 space-y-3">
+              <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+              <p className="text-xs text-slate-500 font-medium">Memuat agenda kalender...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-7 auto-rows-fr gap-px bg-slate-100">
+              
+              {/* Slot Kosong Bulan Sebelumnya */}
+              {Array.from({ length: firstDayIndex }).map((_, idx) => (
+                <div key={`empty-${idx}`} className="bg-white min-h-[100px] sm:min-h-[120px] p-2 opacity-30 pointer-events-none" />
+              ))}
 
-            {/* Cell Hari Bulan Ini */}
-            {Array.from({ length: daysInMonth }).map((_, idx) => {
-              const dayNum = idx + 1;
-              const dateStr = formatDateString(dayNum);
-              const dayEvents = events.filter((e) => e.tanggal === dateStr);
-              const isToday = new Date().toDateString() === new Date(year, month, dayNum).toDateString();
+              {/* Cell Hari Bulan Ini */}
+              {Array.from({ length: daysInMonth }).map((_, idx) => {
+                const dayNum = idx + 1;
+                const dateStr = formatDateString(dayNum);
+                const dayEvents = getEventsForDate(dateStr);
+                const isToday = new Date().toDateString() === new Date(year, month, dayNum).toDateString();
 
-              return (
-                <div
-                  key={dayNum}
-                  onClick={() => handleDateClick(dayNum)}
-                  className={`bg-white min-h-[100px] sm:min-h-[120px] p-2 flex flex-col justify-between hover:bg-amber-50/40 transition cursor-pointer group relative`}
-                >
-                  {/* Angka Tanggal */}
-                  <div className="flex justify-between items-center">
-                    <span
-                      className={`text-xs sm:text-sm font-bold w-7 h-7 flex items-center justify-center rounded-full ${
-                        isToday 
-                          ? "bg-amber-500 text-slate-950 shadow-xs" 
-                          : "text-slate-700 group-hover:text-amber-600"
-                      }`}
-                    >
-                      {dayNum}
-                    </span>
-                    {dayEvents.length > 0 && (
-                      <span className="w-2 h-2 rounded-full bg-amber-500 sm:hidden" />
-                    )}
-                  </div>
-
-                  {/* List Event Singkat di Kalender */}
-                  <div className="space-y-1 mt-1 hidden sm:block">
-                    {dayEvents.slice(0, 2).map((ev) => (
-                      <div
-                        key={ev.id}
-                        className={`text-[10px] p-1.5 rounded-lg border leading-tight truncate font-semibold ${getBadgeStyle(ev.kategori)}`}
+                return (
+                  <div
+                    key={dayNum}
+                    onClick={() => handleDateClick(dayNum)}
+                    className={`bg-white min-h-[100px] sm:min-h-[120px] p-2 flex flex-col justify-between hover:bg-amber-50/40 transition cursor-pointer group relative`}
+                  >
+                    {/* Angka Tanggal */}
+                    <div className="flex justify-between items-center">
+                      <span
+                        className={`text-xs sm:text-sm font-bold w-7 h-7 flex items-center justify-center rounded-full ${
+                          isToday 
+                            ? "bg-amber-500 text-slate-950 shadow-xs" 
+                            : "text-slate-700 group-hover:text-amber-600"
+                        }`}
                       >
-                        {ev.judul}
-                      </div>
-                    ))}
-                    {dayEvents.length > 2 && (
-                      <span className="text-[10px] text-slate-400 font-bold block px-1">
-                        +{dayEvents.length - 2} agenda lagi
+                        {dayNum}
                       </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                      {dayEvents.length > 0 && (
+                        <span className="w-2 h-2 rounded-full bg-amber-500 sm:hidden" />
+                      )}
+                    </div>
 
-          </div>
+                    {/* List Event Singkat di Kalender */}
+                    <div className="space-y-1 mt-1 hidden sm:block">
+                      {dayEvents.slice(0, 2).map((ev) => (
+                        <div
+                          key={ev.id}
+                          className={`text-[10px] p-1.5 rounded-lg border leading-tight truncate font-semibold ${getBadgeStyle(ev.kategori)}`}
+                        >
+                          {ev.judul}
+                        </div>
+                      ))}
+                      {dayEvents.length > 2 && (
+                        <span className="text-[10px] text-slate-400 font-bold block px-1">
+                          +{dayEvents.length - 2} agenda lagi
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+            </div>
+          )}
 
         </div>
 
       </main>
 
-      {/* POPUP MODAL: RINCIAN AGENDA (VISITOR CLICK) */}
+      {/* POPUP MODAL: RINCIAN AGENDA */}
       {selectedDateEvents !== null && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-6 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-6">
             
             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
               <div>
@@ -299,7 +262,9 @@ export default function KalenderAkademikPage() {
 
                     <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                       <Clock className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{ev.waktu}</span>
+                      <span>
+                        {ev.jam_mulai ? `${ev.jam_mulai} ${ev.jam_selesai ? `- ${ev.jam_selesai}` : ""} WIB` : "Seharian"}
+                      </span>
                     </div>
 
                     {ev.deskripsi && (
@@ -323,104 +288,6 @@ export default function KalenderAkademikPage() {
             >
               Tutup
             </button>
-
-          </div>
-        </div>
-      )}
-
-      {/* POPUP MODAL: FORM TAMBAH AGENDA (ADMIN) */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-6">
-            
-            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-              <h3 className="text-lg font-black text-slate-900">Tambah Agenda Baru</h3>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddEvent} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Nama Agenda / Kegiatan</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Contoh: Rapat Wali Murid"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-amber-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Tanggal</label>
-                  <input
-                    type="date"
-                    required
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Kategori</label>
-                  <select
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value as EventAkademik["kategori"])}
-                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
-                  >
-                    <option value="Ujian">Ujian</option>
-                    <option value="Kegiatan">Kegiatan</option>
-                    <option value="Libur">Libur</option>
-                    <option value="Pengumuman">Pengumuman</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Waktu (Opsional)</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: 08.00 - 12.00 WIB"
-                  value={newTime}
-                  onChange={(e) => setNewTime(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-amber-500"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Deskripsi Ringkas</label>
-                <textarea
-                  rows={3}
-                  placeholder="Keterangan singkat kegiatan..."
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-amber-500"
-                />
-              </div>
-
-              <div className="pt-2 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl transition"
-                >
-                  Simpan Agenda
-                </button>
-              </div>
-            </form>
 
           </div>
         </div>

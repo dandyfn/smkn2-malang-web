@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { supabase } from "@/lib/supabase";
 import { 
   Search, 
   Mail, 
@@ -18,92 +19,21 @@ import {
   User,
   ZoomIn,
   ZoomOut,
-  RotateCcw
+  RotateCcw,
+  Loader2
 } from "lucide-react";
 
-// Data Guru & Staf SMKN 2 Malang
-const DATA_GURU = [
-  {
-    id: 1,
-    nama: "Drs. H. Hari Mulyono, M.Pd.",
-    nip: "19680312 199403 1 005",
-    jabatan: "Kepala Sekolah",
-    kejuruan: "Manajerial Sekolah",
-    email: "kepsek@smkn2malang.sch.id",
-    kontak: "+62 812-3456-7890",
-    foto: "/images/guru/hari-mulyono.jpg"
-  },
-  {
-    id: 2,
-    nama: "Drs. H. Suharto, M.Pd.",
-    nip: "19710520 199802 1 002",
-    jabatan: "Waka Kurikulum",
-    kejuruan: "Teknik Komputer dan Jaringan",
-    email: "suharto@smkn2malang.sch.id",
-    kontak: "+62 813-9876-5432",
-    foto: "/images/guru/suharto.jpg"
-  },
-  {
-    id: 3,
-    nama: "Siti Rahmah, S.Pd., M.T.",
-    nip: "19750520 200012 2 002",
-    jabatan: "Kepala Program Keahlian (Kaprog)",
-    kejuruan: "Teknik Komputer dan Jaringan",
-    email: "siti.rahmah@smkn2malang.sch.id",
-    kontak: "+62 813-1122-3344",
-    foto: "/images/guru/siti-rahmah.jpg"
-  },
-  {
-    id: 4,
-    nama: "Budi Santoso, S.Par.",
-    nip: "19820115 200801 1 010",
-    jabatan: null,
-    kejuruan: "Perhotelan",
-    email: "budi.santoso@smkn2malang.sch.id",
-    kontak: "+62 857-1122-3344",
-    foto: "/images/guru/budi-santoso.jpg"
-  },
-  {
-    id: 5,
-    nama: "Dewi Lestari, S.S.T.",
-    nip: "19880908 201402 2 004",
-    jabatan: "Kepala Bengkel / Lab Kuliner",
-    kejuruan: "Kuliner",
-    email: "dewi.lestari@smkn2malang.sch.id",
-    kontak: "+62 821-4433-2211",
-    foto: "/images/guru/dewi-lestari.jpg"
-  },
-  {
-    id: 6,
-    nama: "Ahmad Fauzi, S.Kep., Ns.",
-    nip: "19900418 201903 1 008",
-    jabatan: null,
-    kejuruan: "Layanan Penunjang Keperawatan",
-    email: "ahmad.fauzi@smkn2malang.sch.id",
-    kontak: "+62 888-9900-1122",
-    foto: "/images/guru/ahmad-fauzi.jpg"
-  },
-  {
-    id: 7,
-    nama: "Rina Kartika, S.Sos.",
-    nip: "19851125 201001 2 006",
-    jabatan: "Waka Kesiswaan",
-    kejuruan: "Pekerjaan Sosial",
-    email: "rina.kartika@smkn2malang.sch.id",
-    kontak: "+62 878-6655-4433",
-    foto: "/images/guru/rina-kartika.jpg"
-  },
-  {
-    id: 8,
-    nama: "Eko Prasetyo, S.Par.",
-    nip: "19870712 201101 1 003",
-    jabatan: null,
-    kejuruan: "Usaha Layanan Wisata",
-    email: "eko.prasetyo@smkn2malang.sch.id",
-    kontak: "+62 812-7788-9900",
-    foto: "/images/guru/eko-prasetyo.jpg"
-  },
-];
+interface Guru {
+  id: string;
+  nama: string;
+  nip: string;
+  jabatan: string;
+  kejuruan: string;
+  email: string;
+  kontak: string;
+  foto_url: string;
+  created_at?: string;
+}
 
 const DAFTAR_KEJURUAN = [
   "Semua Kejuruan",
@@ -152,13 +82,32 @@ export default function OrganisasiPage() {
   const handleZoomOut = () => setScale((prev) => Math.max(prev - 0.25, 0.75));
   const handleResetZoom = () => setScale(1);
 
+  const [guruList, setGuruList] = useState<Guru[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedKejuruan, setSelectedKejuruan] = useState("Semua Kejuruan");
 
-  const filteredGuru = DATA_GURU.filter((guru) => {
+  useEffect(() => {
+    const fetchGuru = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("guru")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        setGuruList(data);
+      }
+      setLoading(false);
+    };
+
+    fetchGuru();
+  }, []);
+
+  const filteredGuru = guruList.filter((guru) => {
     const matchSearch =
       guru.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guru.nip.includes(searchTerm) ||
+      (guru.nip && guru.nip.includes(searchTerm)) ||
       (guru.jabatan && guru.jabatan.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchKejuruan =
@@ -308,7 +257,7 @@ export default function OrganisasiPage() {
           </div>
         </section>
 
-        {/* FILTER & SEARCH DATA GURU (MENELAN SECTION BAGAN SAAT SCROLL) */}
+        {/* FILTER & SEARCH DATA GURU */}
         <section className="relative z-10 bg-slate-950 pt-8 space-y-6 -mt-10 rounded-t-3xl shadow-[0_-20px_50px_rgba(2,6,23,0.9)]">
           <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl">
 
@@ -329,10 +278,10 @@ export default function OrganisasiPage() {
               <select
                 value={selectedKejuruan}
                 onChange={(e) => setSelectedKejuruan(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition cursor-pointer"
               >
                 {DAFTAR_KEJURUAN.map((k) => (
-                  <option key={k} value={k} className="bg-slate-900 text-slate-200">
+                  <option key={k} value={k} className="bg-slate-900 text-slate-200 py-1">
                     {k}
                   </option>
                 ))}
@@ -349,63 +298,86 @@ export default function OrganisasiPage() {
             </button>
           </div>
 
-          {/* DAFTAR GURU */}
+                {/* DAFTAR GURU */}
           <div className="space-y-3">
             <div className="flex justify-between items-center text-xs text-slate-400 px-1">
-              <span>Menampilkan {filteredGuru.length} dari {DATA_GURU.length} Data Pendidik & Tenaga Kependidikan</span>
+              <span>Menampilkan {filteredGuru.length} dari {guruList.length} Data Pendidik & Tenaga Kependidikan</span>
             </div>
 
-            {filteredGuru.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-16 space-y-3 bg-slate-900/50 border border-slate-800 rounded-2xl">
+                <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+                <p className="text-xs text-slate-400">Memuat data guru & staf...</p>
+              </div>
+            ) : filteredGuru.length > 0 ? (
               <div className="flex flex-col gap-4">
                 {filteredGuru.map((guru) => (
                   <div
                     key={guru.id}
-                    className="bg-slate-900/80 hover:border-amber-500/50 border border-slate-800 rounded-2xl p-5 transition-all shadow-xl flex items-start gap-5"
+                    className="bg-slate-900/80 hover:border-amber-500/50 border border-slate-800 rounded-2xl p-6 transition-all shadow-xl flex items-center gap-6 min-h-[180px]"
                   >
-                    {/* FOTO PROFIL */}
-                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0 flex items-center justify-center">
-                      {guru.foto ? (
+                    {/* FOTO PROFIL (Ukuran Presisi & Tinggi Konsisten) */}
+                    <div className="relative w-36 sm:w-44 h-40 sm:h-44 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0 flex items-center justify-center">
+                      {guru.foto_url ? (
                         <img
-                          src={guru.foto}
+                          src={guru.foto_url}
                           alt={guru.nama}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = 'none';
-                            (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                            if (e.currentTarget.nextElementSibling) {
+                              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                            }
                           }}
                         />
                       ) : null}
-                      <div className="hidden flex-col items-center justify-center text-slate-600">
-                        <User className="w-8 h-8" />
+                      <div className={`flex-col items-center justify-center text-slate-600 ${guru.foto_url ? 'hidden' : 'flex'}`}>
+                        <User className="w-12 h-12" />
                       </div>
                     </div>
 
                     {/* DETAIL INFORMASI */}
-                    <div className="flex-1 space-y-1.5">
-                      <h3 className="font-bold text-white text-base sm:text-lg leading-tight">
-                        {guru.nama}
-                      </h3>
-                      <p className="text-xs text-slate-400 font-mono">
-                        NIP. {guru.nip}
-                      </p>
-                      {guru.jabatan && (
-                        <p className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-md inline-block border border-amber-500/20">
-                          {guru.jabatan}
+                    <div className="flex-1 flex flex-col justify-center space-y-2.5">
+                      <div className="space-y-1">
+                        <h3 className="font-bold text-white text-lg sm:text-2xl leading-snug">
+                          {guru.nama}
+                        </h3>
+                        {guru.nip ? (
+                          <p className="text-sm text-slate-400 font-mono tracking-wide">
+                            NIP. {guru.nip}
+                          </p>
+                        ) : (
+                          <p className="text-sm text-slate-600 font-mono italic">
+                            NIP. -
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        {guru.jabatan && (
+                          <p className="text-xs sm:text-sm font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20">
+                            {guru.jabatan}
+                          </p>
+                        )}
+                        <p className="text-sm sm:text-base font-semibold text-sky-400">
+                          {guru.kejuruan}
                         </p>
-                      )}
-                      <p className="text-xs font-semibold text-sky-400">
-                        {guru.kejuruan}
-                      </p>
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1 text-xs text-slate-400">
-                        <div className="flex items-center gap-1.5">
-                          <Mail className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                          <span>{guru.email}</span>
-                        </div>
-                        <span className="hidden sm:inline text-slate-700">•</span>
-                        <div className="flex items-center gap-1.5">
-                          <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                          <span>{guru.kontak}</span>
-                        </div>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs sm:text-sm text-slate-400 pt-1">
+                        {guru.email && (
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-slate-500 shrink-0" />
+                            <span>{guru.email}</span>
+                          </div>
+                        )}
+                        {guru.email && guru.kontak && <span className="hidden sm:inline text-slate-700">•</span>}
+                        {guru.kontak && (
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4 text-slate-500 shrink-0" />
+                            <span>{guru.kontak}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -423,6 +395,7 @@ export default function OrganisasiPage() {
               </div>
             )}
           </div>
+
         </section>
 
       </main>
