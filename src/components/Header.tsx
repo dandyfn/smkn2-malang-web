@@ -1,25 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, MapPin, Phone } from "lucide-react";
+import { ChevronDown, MapPin, Phone, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const pathname = usePathname(); // Untuk mendeteksi path/halaman aktif secara otomatis
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  const toggleSubmenu = (menu: string) => {
+    setOpenSubmenu(openSubmenu === menu ? null : menu);
+  };
 
   return (
     <>
-      {/* 1. TOP BAR INFORMASI */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-2 px-6 border-b border-slate-800 relative z-50">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
-          <p className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-amber-400" />
-            Jl. Veteran No. 17, Malang, Jawa Timur | 
-            <Phone className="w-3.5 h-3.5 text-amber-400 ml-1" /> (0341) 551504
+      {/* 1. TOP BAR INFORMASI (Responsive Mobile) */}
+      <div className="bg-slate-900 text-slate-300 text-[10px] sm:text-xs py-2 px-4 sm:px-6 border-b border-slate-800 relative z-50">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1.5 sm:gap-2 text-center sm:text-left">
+          <p className="flex items-center justify-center gap-1.5 truncate">
+            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+            <span className="truncate">Jl. Veteran No. 17, Malang</span>
+            <span className="hidden sm:inline">|</span>
+            <Phone className="w-3 h-3 text-amber-400 ml-1 shrink-0 hidden sm:inline" />
+            <span className="hidden sm:inline">(0341) 551504</span>
           </p>
-          <div className="flex gap-4 font-medium">
+          <div className="flex gap-3 font-medium">
             <a href="#" className="hover:text-amber-400 transition">BKK (Bursa Kerja)</a>
             <span>•</span>
             <a href="#" className="hover:text-amber-400 transition">PPDB 2026/2027</a>
@@ -29,11 +36,11 @@ export default function Header() {
 
       {/* 2. HEADER NAVBAR UTAMA */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
           
-          {/* Logo Brand (Navigasi Kembali ke Beranda) */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 relative flex items-center justify-center">
+          {/* Logo Brand */}
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 relative flex items-center justify-center">
               <img
                 src="/images/smkn2logo.png"
                 alt="Logo SMKN 2 Malang"
@@ -42,14 +49,13 @@ export default function Header() {
             </div>
 
             <div className="flex flex-col">
-              <span className="font-black text-slate-900 text-lg tracking-wider leading-none">SMKN 2</span>
-              <span className="text-[10px] font-bold text-amber-600 tracking-widest uppercase mt-1">MALANG</span>
+              <span className="font-black text-slate-900 text-base sm:text-lg tracking-wider leading-none">SMKN 2</span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-amber-600 tracking-widest uppercase mt-0.5 sm:mt-1">MALANG</span>
             </div>
           </Link>
 
           {/* Navigasi Desktop */}
           <nav className="hidden md:flex items-center gap-1 font-semibold text-sm">
-            {/* Link Beranda */}
             <Link 
               href="/" 
               className={`px-4 py-2 rounded-xl transition ${
@@ -76,8 +82,6 @@ export default function Header() {
               
               <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 w-56">
                 <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-xl ring-1 ring-black/5">
-                  
-                  {/* 01 Profil Singkat */}
                   <Link 
                     href="/profil" 
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
@@ -89,7 +93,6 @@ export default function Header() {
                     <span className="text-xs font-bold text-amber-600">01</span> Profil Singkat
                   </Link>
 
-                  {/* 02 Organisasi */}
                   <Link 
                     href="/organisasi" 
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
@@ -101,7 +104,6 @@ export default function Header() {
                     <span className="text-xs font-bold text-amber-600">02</span> Organisasi
                   </Link>
 
-                  {/* 03 Prestasi */}
                   <Link 
                     href="/prestasi" 
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
@@ -112,7 +114,6 @@ export default function Header() {
                   >
                     <span className="text-xs font-bold text-amber-600">03</span> Prestasi
                   </Link>
-
                 </div>
               </div>
             </div>
@@ -132,13 +133,10 @@ export default function Header() {
               
               <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50 w-56">
                 <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-xl ring-1 ring-black/5">
-                  
-                  {/* 01 Beasiswa */}
                   <a href="/#beasiswa" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-50 border-l-2 border-transparent hover:border-amber-500 transition">
                     <span className="text-xs font-bold text-amber-600">01</span> Beasiswa
                   </a>
 
-                  {/* 02 Kalender Akademik */}
                   <Link 
                     href="/kalender" 
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
@@ -150,7 +148,6 @@ export default function Header() {
                     <span className="text-xs font-bold text-amber-600">02</span> Kalender Akademik
                   </Link>
 
-                  {/* 03 Ekstrakurikuler (SEKARANG SUDAH MENGGUNAKAN <Link> KE /ekstrakurikuler) */}
                   <Link 
                     href="/ekstrakurikuler" 
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition border-l-2 ${
@@ -161,7 +158,6 @@ export default function Header() {
                   >
                     <span className="text-xs font-bold text-amber-600">03</span> Ekstrakurikuler
                   </Link>
-
                 </div>
               </div>
             </div>
@@ -198,18 +194,146 @@ export default function Header() {
             >
               Kontak
             </Link>
-
-
           </nav>
 
-          {/* Tombol Portal PPDB */}
+          {/* Tombol PPDB Desktop */}
           <div className="hidden md:flex items-center gap-3">
             <a href="/#ppdb" className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-md shadow-amber-500/20">
               Portal PPDB
             </a>
           </div>
 
+          {/* Tombol Hamburger (Hanya Tampil di Mobile) */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 rounded-xl text-slate-700 hover:text-amber-600 hover:bg-slate-100 transition"
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+
         </div>
+
+        {/* 3. MENU MOBILE DRAWER (Tampil Saat Hamburger Diklik) */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2 shadow-xl max-h-[80vh] overflow-y-auto animate-in slide-in-from-top duration-200">
+            <Link
+              href="/"
+              onClick={() => setIsMenuOpen(false)}
+              className={`block px-4 py-2.5 rounded-xl font-semibold text-sm ${
+                pathname === "/" ? "bg-amber-50 text-amber-600 font-bold" : "text-slate-700"
+              }`}
+            >
+              Beranda
+            </Link>
+
+            {/* Submenu Mobile: Tentang */}
+            <div className="space-y-1">
+              <button
+                onClick={() => toggleSubmenu("tentang")}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-sm text-slate-700"
+              >
+                <span>Tentang</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${openSubmenu === "tentang" ? "rotate-180 text-amber-600" : ""}`} />
+              </button>
+              {openSubmenu === "tentang" && (
+                <div className="pl-4 pr-2 py-1 space-y-1 bg-slate-50 rounded-xl">
+                  <Link
+                    href="/profil"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-amber-600"
+                  >
+                    01. Profil Singkat
+                  </Link>
+                  <Link
+                    href="/organisasi"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-amber-600"
+                  >
+                    02. Organisasi
+                  </Link>
+                  <Link
+                    href="/prestasi"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-amber-600"
+                  >
+                    03. Prestasi
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Submenu Mobile: Akademik */}
+            <div className="space-y-1">
+              <button
+                onClick={() => toggleSubmenu("akademik")}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-sm text-slate-700"
+              >
+                <span>Akademik</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${openSubmenu === "akademik" ? "rotate-180 text-amber-600" : ""}`} />
+              </button>
+              {openSubmenu === "akademik" && (
+                <div className="pl-4 pr-2 py-1 space-y-1 bg-slate-50 rounded-xl">
+                  <a
+                    href="/#beasiswa"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-amber-600"
+                  >
+                    01. Beasiswa
+                  </a>
+                  <Link
+                    href="/kalender"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-amber-600"
+                  >
+                    02. Kalender Akademik
+                  </Link>
+                  <Link
+                    href="/ekstrakurikuler"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-amber-600"
+                  >
+                    03. Ekstrakurikuler
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/konsentrasi-keahlian"
+              onClick={() => setIsMenuOpen(false)}
+              className="block px-4 py-2.5 rounded-xl font-semibold text-sm text-slate-700"
+            >
+              Konsentrasi Keahlian
+            </Link>
+
+            <Link
+              href="/fasilitas"
+              onClick={() => setIsMenuOpen(false)}
+              className="block px-4 py-2.5 rounded-xl font-semibold text-sm text-slate-700"
+            >
+              Fasilitas
+            </Link>
+
+            <Link
+              href="/kontak"
+              onClick={() => setIsMenuOpen(false)}
+              className="block px-4 py-2.5 rounded-xl font-semibold text-sm text-slate-700"
+            >
+              Kontak
+            </Link>
+
+            <div className="pt-2">
+              <a
+                href="/#ppdb"
+                onClick={() => setIsMenuOpen(false)}
+                className="block text-center w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider transition"
+              >
+                Portal PPDB
+              </a>
+            </div>
+          </div>
+        )}
       </header>
     </>
   );
