@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowDown, Play } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, Play, UserCheck } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -22,6 +23,18 @@ export default function Hero() {
 
       {/* Content Wrapper */}
       <div className="relative z-20 -mt-[calc(100vh-5rem)]">
+        {/* Tombol Akses Admin Pojok Kanan Atas (Background Bening/Transparan, Hanya Border White/20) */}
+        <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-30">
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center gap-1.5 bg-transparent hover:bg-white/10 text-white/70 hover:text-white border border-white/20 hover:border-white/60 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-300 group"
+            title="Akses Panel Admin"
+          >
+            <UserCheck className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+            <span>Admin</span>
+          </Link>
+        </div>
+
         {/* 1. Hero Main Section */}
         <section className="h-[calc(100vh-5rem)] flex items-center justify-center px-6 text-center">
           <div className="max-w-4xl mx-auto">

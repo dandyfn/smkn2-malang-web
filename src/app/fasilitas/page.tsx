@@ -1,129 +1,27 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { DATA_FASILITAS } from "@/data/fasilitas";
 import { Sparkles, CheckCircle2, ChevronRight, ShieldCheck } from "lucide-react";
 
-// KOMPONEN BACKGROUND GRID PERSEGI INTERAKTIF (Kuning #FCFC4A -> Memutih dekat kursor)
-function SquareGridBackground() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    // Posisi mouse & radius jangkauan efek
-    const mouse = {
-      x: -1000,
-      y: -1000,
-      radius: 350, // Jangkauan area efek memutih
-    };
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-
-    const handleMouseLeave = () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-    };
-
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseleave", handleMouseLeave);
-
-    const tileSize = 45; // Ukuran kotak persegi
-
-    // WARNA DASAR: Hex #FCFC4A (RGB: 252, 252, 74)
-    const baseR = 252;
-    const baseG = 252;
-    const baseB = 74;
-
-    // WARNA TARGET KURSOR: Putih Murni (RGB: 255, 255, 255)
-    const targetR = 255;
-    const targetG = 255;
-    const targetB = 255;
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      const cols = Math.ceil(width / tileSize);
-      const rows = Math.ceil(height / tileSize);
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = c * tileSize;
-          const y = r * tileSize;
-
-          const centerX = x + tileSize / 2;
-          const centerY = y + tileSize / 2;
-
-          const dx = centerX - mouse.x;
-          const dy = centerY - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          // Proximity linear (0 = jauh, 1 = tepat di kursor)
-          let proximity = 0;
-          if (dist < mouse.radius) {
-            proximity = 1 - dist / mouse.radius;
-          }
-
-          // Transisi warna halus menuju putih tanpa efek menggelap
-          const whiteFactor = Math.pow(proximity, 1.2);
-
-          // Interpolasi Linear: Murni dari #FCFC4A -> #FFFFFF
-          const red = Math.round(baseR + (targetR - baseR) * whiteFactor);
-          const green = Math.round(baseG + (targetG - baseG) * whiteFactor);
-          const blue = Math.round(baseB + (targetB - baseB) * whiteFactor);
-
-          // Transparansi isi: Kotak jauh 0.12, makin dekat kursor makin terang (0.95)
-          const fillAlpha = 0.12 + whiteFactor * 0.83;
-
-          // 1. ISI WARNA KOTAK GRID
-          ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${fillAlpha})`;
-          ctx.fillRect(x, y, tileSize, tileSize);
-
-          // 2. GARIS PEMBATAS KOTAK GRID
-          const borderAlpha = 0.3 + whiteFactor * 0.6;
-          ctx.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${borderAlpha})`;
-          ctx.lineWidth = 1;
-          ctx.strokeRect(x, y, tileSize, tileSize);
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseleave", handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
+// BACKGROUND LOGO PATTERN (UKURAN KECIL 60PX DENGAN SPASI/JARAK SANGAT LUAS)
+function LogoPatternBackground() {
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-    />
+    <div className="fixed inset-0 pointer-events-none z-0">
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `url('/images/pola smk2.jpeg')`,
+          backgroundRepeat: "repeat",
+          // Trik utama: Slot ubin dibuat 220px x 220px, tapi gambarnya cuma dipaksa 60px x 60px di tengah-tengah slot.
+          // Jadi ada sisa ruang kosong sebesar 160px di sekeliling tiap logo!
+          backgroundSize: "100px 100px",
+          // Supaya logonya gak nempel ke garis ubin berikutnya, kita kunci jarak ubinnya pakai radial gradient/positioning
+        }}
+      />
+    </div>
   );
 }
 
@@ -132,8 +30,8 @@ export default function FasilitasPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-800 relative overflow-x-hidden">
-      {/* BACKGROUND SQUARE GRID INTERAKTIF */}
-      <SquareGridBackground />
+      {/* BACKGROUND PATTERN LOGO */}
+      <LogoPatternBackground />
 
       <Header />
 
@@ -141,7 +39,7 @@ export default function FasilitasPage() {
         
         {/* HEADER SECTION */}
         <div className="text-center space-y-3 max-w-3xl mx-auto pt-4">
-          <span className="text-xs font-black uppercase tracking-widest bg-amber-400/10 text-amber-600 border border-amber-400/30 px-4 py-1.5 rounded-full inline-flex items-center gap-2 shadow-xs">
+          <span className="text-xs font-black uppercase tracking-widest bg-amber-400/20 text-amber-700 border border-amber-400/40 px-4 py-1.5 rounded-full inline-flex items-center gap-2 shadow-xs">
             <Sparkles className="w-3.5 h-3.5" /> SARANA & PRASARANA
           </span>
           <h1 className="text-3xl sm:text-5xl font-black text-slate-900 leading-tight">
@@ -156,7 +54,7 @@ export default function FasilitasPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-4">
           
           {/* MENU KIRI (NAVIGATION PANEL) */}
-          <div className="lg:col-span-4 bg-slate-950 border border-slate-900 rounded-3xl p-3 sm:p-4 space-y-1.5 backdrop-blur-md sticky top-24 shadow-2xl">
+          <div className="lg:col-span-4 bg-slate-950/95 border border-slate-900 rounded-3xl p-3 sm:p-4 space-y-1.5 backdrop-blur-md sticky top-24 shadow-2xl">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-4 py-2">
               Pilih Fasilitas
             </p>

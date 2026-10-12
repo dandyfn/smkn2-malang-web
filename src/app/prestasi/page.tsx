@@ -79,16 +79,18 @@ export default function PrestasiPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 relative overflow-hidden">
-      {/* CORAK GAMBAR 2D BAKAT & PRESTASI (SVG DOODLE PATTERN) */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='260' height='260' viewBox='0 0 260 260' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f59e0b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 20 h50 v25 a25 25 0 0 1 -50 0 z' fill='%23f59e0b' fill-opacity='0.15' /%3E%3Cpath d='M12 20 h8 M70 20 h8 M12 20 a12 12 0 0 0 12 12 M78 20 a12 12 0 0 1 -12 12 M45 45 v16 M30 61 h30 M22 69 h46' /%3E%3Ccircle cx='195' cy='45' r='20' /%3E%3Ccircle cx='45' cy='185' r='18' fill='%23f59e0b' fill-opacity='0.2' /%3E%3Ccircle cx='190' cy='190' r='20' /%3E%3C/g%3E%3C/svg%3E")`,
-            backgroundSize: "260px 260px",
-          }}
-        />
-      </div>
+      {/* CORAK GAMBAR 2D BAKAT & PRESTASI (SVG DOODLE PATTERN BERULANG) */}
+{/* CORAK GAMBAR PRESTASI PRESISI */}
+    <div className="absolute inset-0 pointer-events-none z-0">
+      <div
+        className="absolute inset-0 opacity-15"
+        style={{
+          backgroundImage: `url('/images/pola prestasi2.jpeg')`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "170px auto", // Atur jarak/ukuran pola di sini
+        }}
+      />
+    </div>
 
       <Header />
 
@@ -143,8 +145,8 @@ export default function PrestasiPage() {
             <p className="text-sm text-slate-500 font-medium">Memuat data prestasi...</p>
           </div>
         ) : filteredData.length === 0 ? (
-          <div className="text-center py-16 bg-white/80 rounded-3xl border border-slate-200 p-8">
-            <Trophy className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <div className="text-center py-16 bg-white/80 rounded-3xl border border-slate-200 p-8 relative z-20">
+            < Trophy className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-700">Belum Ada Prestasi Ditemukan</h3>
             <p className="text-xs text-slate-500 mt-1">
               Coba kata kunci pencarian lain atau pilih kategori yang berbeda.
@@ -176,7 +178,7 @@ export default function PrestasiPage() {
                   className="snap-start shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white/95 backdrop-blur-xs border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 hover:border-amber-400 transition-all duration-300 flex flex-col"
                 >
                   {/* Gambar Banner / Thumbnail */}
-                  <div className="relative h-52 bg-slate-100 overflow-hidden">
+                  <div className="relative h-52 bg-slate-100 overflow-hidden group">
                     <img
                       src={item.banner_url}
                       alt={item.judul}
@@ -197,7 +199,7 @@ export default function PrestasiPage() {
                         <Calendar className="w-3.5 h-3.5 text-amber-600" />
                         <span>{item.tanggal}</span>
                       </div>
-                      <h3 className="font-bold text-slate-900 text-lg group-hover:text-amber-600 transition-colors line-clamp-2">
+                      <h3 className="font-bold text-slate-900 text-lg transition-colors line-clamp-2">
                         {item.judul}
                       </h3>
                       <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
@@ -205,9 +207,9 @@ export default function PrestasiPage() {
                       </p>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600">
                       <span>Lihat Selengkapnya</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
                 </Link>
