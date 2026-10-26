@@ -6,19 +6,19 @@ import Footer from "@/components/Footer";
 import { DATA_FASILITAS } from "@/data/fasilitas";
 import { Sparkles, CheckCircle2, ChevronRight, ShieldCheck } from "lucide-react";
 
-// BACKGROUND LOGO PATTERN (UKURAN KECIL 60PX DENGAN SPASI/JARAK SANGAT LUAS)
 function LogoPatternBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none z-0">
+    // mix-blend-multiply: latar putih gambar "hilang" ke latar halaman,
+    // yang tersisa hanya garis kuning logonya, jadi warnanya lebih hidup
+    <div className="fixed inset-0 pointer-events-none z-0 mix-blend-multiply">
       <div
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0"
         style={{
           backgroundImage: `url('/images/pola smk2.jpeg')`,
           backgroundRepeat: "repeat",
-          // Trik utama: Slot ubin dibuat 220px x 220px, tapi gambarnya cuma dipaksa 60px x 60px di tengah-tengah slot.
-          // Jadi ada sisa ruang kosong sebesar 160px di sekeliling tiap logo!
-          backgroundSize: "100px 100px",
-          // Supaya logonya gak nempel ke garis ubin berikutnya, kita kunci jarak ubinnya pakai radial gradient/positioning
+          backgroundSize: "120px 120px",
+          opacity: 0.18,                      // naikkan/turunkan sesuai selera (0.3 - 0.7)
+          filter: "saturate(1.4) contrast(1.15)", // warna kuning lebih pekat, garis lebih tegas
         }}
       />
     </div>

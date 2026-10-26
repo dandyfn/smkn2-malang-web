@@ -122,8 +122,8 @@ export default function OrganisasiPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
-      {/* CSS KEYFRAMES ANIMASI MARQUEE BERJALAN DARI KANAN KE KIRI */}
+    <div className="relative isolate min-h-screen flex flex-col bg-black text-slate-100">
+      {/* CSS KEYFRAMES: MARQUEE + MOTIF BATIK NEON */}
       <style jsx global>{`
         @keyframes marquee {
           0% {
@@ -141,7 +141,34 @@ export default function OrganisasiPage() {
         .animate-marquee-scroll:hover {
           animation-play-state: paused;
         }
+
+        /* Motif batik mega mendung: kecil, banyak, baris berselang-seling (sudah diatur di dalam gambar tile) */
+        .batik-neon {
+          background-image: url("/images/batik-neon-tile.png");
+          background-size: 300px 330px;
+          background-repeat: repeat;
+          /* Warna motif tetap; yang ditambahkan hanya cahaya (glow) dengan rona yang sama */
+          filter: drop-shadow(0 0 2px rgba(129, 140, 248, 0.95))
+                  drop-shadow(0 0 6px rgba(99, 102, 241, 0.85))
+                  drop-shadow(0 0 14px rgba(79, 70, 229, 0.65));
+        }
+        .batik-neon-pulse {
+          animation: batik-pulse 6s ease-in-out infinite;
+        }
+        @keyframes batik-pulse {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .batik-neon-pulse { animation: none; }
+        }
       `}</style>
+
+      {/* BACKGROUND BATIK NEON (menempel di layar, berada di belakang semua konten) */}
+      <div
+        aria-hidden="true"
+        className="batik-neon batik-neon-pulse fixed inset-0 -z-10 pointer-events-none"
+      />
 
       <Header />
 
@@ -162,8 +189,8 @@ export default function OrganisasiPage() {
 
         {/* NALAR ORGANISASI SEKOLAH - MARQUEE CAROUSEL */}
         <section className="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden py-4 my-6">
-          <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none" />
-          <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
 
           <div className="animate-marquee-scroll flex gap-6">
             {[...CARDS_ORGANISASI, ...CARDS_ORGANISASI, ...CARDS_ORGANISASI].map((card, idx) => {
@@ -258,8 +285,15 @@ export default function OrganisasiPage() {
         </section>
 
         {/* FILTER & SEARCH DATA GURU */}
-        <section className="relative z-10 bg-slate-950 pt-8 space-y-6 -mt-10 rounded-t-3xl shadow-[0_-20px_50px_rgba(2,6,23,0.9)]">
-          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl">
+        {/* Section ini menutupi bagan yang sticky, jadi ia punya lapisan batik sendiri (background-attachment: fixed) agar sejajar dengan batik halaman */}
+        <section className="relative z-10 bg-black pt-8 space-y-6 -mt-10 rounded-t-3xl overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.9)]">
+          <div
+            aria-hidden="true"
+            className="batik-neon absolute inset-0 pointer-events-none"
+            style={{ backgroundAttachment: "fixed" }}
+          />
+
+          <div className="relative flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl">
 
             {/* Input Search */}
             <div className="relative flex-1">
@@ -298,8 +332,8 @@ export default function OrganisasiPage() {
             </button>
           </div>
 
-                {/* DAFTAR GURU */}
-          <div className="space-y-3">
+          {/* DAFTAR GURU */}
+          <div className="relative space-y-3">
             <div className="flex justify-between items-center text-xs text-slate-400 px-1">
               <span>Menampilkan {filteredGuru.length} dari {guruList.length} Data Pendidik & Tenaga Kependidikan</span>
             </div>
