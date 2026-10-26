@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { LogOut, Newspaper, Trophy, Calendar, Users, MessageSquare } from "lucide-react";
+import { LogOut, Newspaper, Trophy, Calendar, Users, Star, HelpCircle } from "lucide-react";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>("");
   const [loading, setLoading] = useState(true);
+  const [pendingFaq, setPendingFaq] = useState(0);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -19,6 +20,13 @@ export default function AdminDashboardPage() {
       } else {
         setUserEmail(session.user.email ?? "");
         setLoading(false);
+
+        // Hitung pertanyaan FAQ yang belum dijawab (untuk lencana di kartu menu)
+        const { count } = await supabase
+          .from("faq_questions")
+          .select("id", { count: "exact", head: true })
+          .is("answer", null);
+        setPendingFaq(count ?? 0);
       }
     };
     checkAuth();
@@ -42,7 +50,8 @@ export default function AdminDashboardPage() {
     { label: "Kelola Prestasi", desc: "Upload pencapaian siswa", icon: Trophy, color: "text-amber-400", href: "/admin/prestasi" },
     { label: "Kalender Akademik", desc: "Atur jadwal & agenda sekolah", icon: Calendar, color: "text-emerald-400", href: "/admin/kalender" },
     { label: "Organisasi & Ekskul", desc: "Update daftar ekskul", icon: Users, color: "text-purple-400", href: "/admin/organisasi" },
-    { label: "Pesan Kontak (WA)", desc: "Lihat pesan masuk dari web", icon: MessageSquare, color: "text-green-400", href: "/admin/kontak" },
+    { label: "Kelola Ulasan", desc: "Atur ulasan pilihan dari Google Maps", icon: Star, color: "text-sky-400", href: "/admin/ulasan" },
+    { label: "Kelola FAQ", desc: "Jawab pertanyaan dari pengunjung", icon: HelpCircle, color: "text-rose-400", href: "/admin/faq" },
   ];
 
   return (
@@ -69,7 +78,14 @@ export default function AdminDashboardPage() {
             href={item.href}
             className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3 hover:border-slate-700 transition-all cursor-pointer group block"
           >
-            <item.icon className={`w-8 h-8 ${item.color} group-hover:scale-110 transition-transform`} />
+            <div className="flex items-start justify-between">
+              <item.icon className={`w-8 h-8 ${item.color} group-hover:scale-110 transition-transform`} />
+              {item.href === "/admin/faq" && pendingFaq > 0 && (
+                <span className="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-full">
+                  {pendingFaq > 99 ? "99+" : pendingFaq} baru
+                </span>
+              )}
+            </div>
             <div>
               <h3 className="font-bold text-sm text-white">{item.label}</h3>
               <p className="text-xs text-slate-400 mt-1">{item.desc}</p>
