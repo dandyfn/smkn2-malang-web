@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
+
 import ImageExtension from "@tiptap/extension-image";
 
 interface Berita {
@@ -307,10 +307,10 @@ export default function AdminBeritaPage() {
 
   const editor = useEditor({
     extensions: [
-      StarterKit, 
-      Underline, 
+      StarterKit,
       CustomImage,
     ],
+    immediatelyRender: false,
     content: "",
     editorProps: {
       attributes: {

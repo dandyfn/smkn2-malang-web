@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import NeuralNetworkBackground from "@/components/NeuralNetworkBackground";
 import { Lock, Mail, ArrowRight, ShieldAlert } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -32,9 +33,12 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-        
+    <div className="min-h-screen bg-white text-white flex items-center justify-center p-4 relative overflow-hidden">
+      {/* BACKGROUND NEURAL NETWORK INTERAKTIF (#251FBC) */}
+      <NeuralNetworkBackground />
+
+      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6 relative z-10">
+
         {/* HEADER */}
         <div className="text-center space-y-2">
           <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-3">
@@ -42,7 +46,7 @@ export default function AdminLoginPage() {
           </div>
           <h1 className="text-2xl font-black tracking-wide">PORTAL ADMIN</h1>
           <p className="text-xs text-slate-400">
-            Masuk untuk mengelola berita, prestasi, kalender, dan kontak sekolah.
+            Masuk untuk mengelola berita, prestasi, kalender, organisasi, dan ulasan sekolah.
           </p>
         </div>
 

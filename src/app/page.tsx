@@ -6,10 +6,33 @@ import Berita from "@/components/Berita";
 import DividerWave from "@/components/DividerWave";
 import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
+
+// Tambahkan alamat jalan dan nomor telepon resmi sekolah di sini bila sudah ada datanya
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HighSchool",
+  name: SITE_NAME,
+  alternateName: "SMKN 2 Malang",
+  url: SITE_URL,
+  logo: `${SITE_URL}/images/smkn2logo.png`,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Malang",
+    addressRegion: "Jawa Timur",
+    addressCountry: "ID",
+  },
+};
 
 export default function Home() {
   return (
     <main className="bg-slate-950 text-white font-sans antialiased">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <Header />
       <Hero />
       <MitraIndustri />

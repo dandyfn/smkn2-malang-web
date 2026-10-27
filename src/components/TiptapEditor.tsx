@@ -2,7 +2,6 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
 import { 
   Bold, Italic, Underline as UnderlineIcon, Heading1, Heading2, Heading3,
   List, ListOrdered, Quote, Undo, Redo 
@@ -15,7 +14,9 @@ interface TiptapEditorProps {
 
 export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit, Underline],
+    // StarterKit Tiptap v3 sudah menyertakan Underline
+    extensions: [StarterKit],
+    immediatelyRender: false,
     content: content || "",
     editorProps: {
       attributes: {

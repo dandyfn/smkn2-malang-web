@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, Play, UserCheck } from "lucide-react";
@@ -8,22 +6,24 @@ export default function Hero() {
   return (
     <div className="relative min-h-[170vh]">
       {/* Background Image Sticky Parallax */}
-      <div className="sticky top-20 h-[calc(100vh-5rem)] w-full overflow-hidden z-0 relative">
+      <div className="sticky top-20 h-[calc(100vh-5rem)] w-full overflow-hidden z-0">
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-900/40 z-10" />
-        <Image
-          src="/images/hero-bg.png"
-          alt="Gedung SMKN 2 Malang"
-          fill
-          priority
-          sizes="100vw"
-          quality={85}
-          className="object-cover object-center scale-105"
-        />
+        <div className="absolute inset-0">
+          <Image
+            src="/images/hero-bg.png"
+            alt="Gedung SMKN 2 Malang"
+            fill
+            priority
+            sizes="100vw"
+            quality={85}
+            className="object-cover object-center scale-105"
+          />
+        </div>
       </div>
 
       {/* Content Wrapper */}
       <div className="relative z-20 -mt-[calc(100vh-5rem)]">
-        {/* Tombol Akses Admin Pojok Kanan Atas (Background Bening/Transparan, Hanya Border White/20) */}
+        {/* Tombol Akses Admin Pojok Kanan Atas */}
         <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-30">
           <Link
             href="/admin/login"
