@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Header from "@/components/Header";
@@ -8,132 +7,23 @@ import Footer from "@/components/Footer";
 import { DATA_EKSTRAKURIKULER } from "@/data/ekstrakurikuler";
 import { ArrowLeft, Calendar, MapPin, User, BookOpen, Images } from "lucide-react";
 
-// KOMPONEN BACKGROUND NEURAL NETWORK ANIMASI (Warna Kustom: #251FBC)
-function NeuralNetworkBackground() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+// KOMPONEN BACKGROUND BATIK (motif biru polos di atas latar putih, tanpa efek neon)
+// Ubin gambar: public/images/batik-biru-tile.png
+const BATIK_TILE = "/images/batik-biru-tile.png";
+const BATIK_SIZE = "600px 400px"; // ukuran 1 ubin di layar. Kecilkan = motif lebih kecil & lebih rapat
+const BATIK_OPACITY = 0.6;        // 0 - 1. Naikkan kalau kurang terlihat, turunkan kalau terlalu ramai
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    // Posisi awal Mouse (di luar layar)
-    const mouse = {
-      x: -1000,
-      y: -1000,
-      radius: 180, // Jangkauan pergerakan mouse
-    };
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-
-    const handleMouseLeave = () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-    };
-
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseleave", handleMouseLeave);
-
-    // Membuat node/titik-titik
-    const nodeCount = Math.floor((width * height) / 12000);
-    const nodes: Array<{ x: number; y: number; vx: number; vy: number; radius: number }> = [];
-
-    for (let i = 0; i < nodeCount; i++) {
-      nodes.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        radius: Math.random() * 2 + 1.5,
-      });
-    }
-
-    // Loop animasi
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      // Update & Gambar Titik (Nodes)
-      nodes.forEach((node, i) => {
-        node.x += node.vx;
-        node.y += node.vy;
-
-        // Pantulan saat menabrak batas layar
-        if (node.x < 0 || node.x > width) node.vx *= -1;
-        if (node.y < 0 || node.y > height) node.vy *= -1;
-
-        // Gambar titik menggunakan warna Hex #251FBC (RGB: 37, 31, 188)
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(37, 31, 188, 0.75)";
-        ctx.fill();
-
-        // Hubungkan antar titik
-        for (let j = i + 1; j < nodes.length; j++) {
-          const otherNode = nodes[j];
-          const dx = node.x - otherNode.x;
-          const dy = node.y - otherNode.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = 130;
-
-          if (distance < maxDistance) {
-            ctx.beginPath();
-            ctx.moveTo(node.x, node.y);
-            ctx.lineTo(otherNode.x, otherNode.y);
-            const alpha = (1 - distance / maxDistance) * 0.35;
-            ctx.strokeStyle = `rgba(37, 31, 188, ${alpha})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        }
-
-        // Hubungkan titik ke pergerakan MOUSE
-        const dxMouse = node.x - mouse.x;
-        const dyMouse = node.y - mouse.y;
-        const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
-
-        if (distMouse < mouse.radius) {
-          ctx.beginPath();
-          ctx.moveTo(node.x, node.y);
-          ctx.lineTo(mouse.x, mouse.y);
-          const alphaMouse = (1 - distMouse / mouse.radius) * 0.55;
-          ctx.strokeStyle = `rgba(37, 31, 188, ${alphaMouse})`;
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
-        }
-      });
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseleave", handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
+function BatikBackground() {
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      aria-hidden
       className="fixed inset-0 pointer-events-none z-0"
+      style={{
+        backgroundImage: `url(${BATIK_TILE})`,
+        backgroundRepeat: "repeat",
+        backgroundSize: BATIK_SIZE,
+        opacity: BATIK_OPACITY,
+      }}
     />
   );
 }
@@ -157,7 +47,7 @@ export default function DetailEkstrakurikulerPage() {
   if (!ekskul) {
     return (
       <div className="min-h-screen flex flex-col bg-white text-slate-800 relative overflow-x-hidden">
-        <NeuralNetworkBackground />
+        <BatikBackground />
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4 z-10 relative">
           <h1 className="text-2xl font-bold text-slate-900">Ekstrakurikuler Tidak Ditemukan</h1>
@@ -176,8 +66,8 @@ export default function DetailEkstrakurikulerPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-800 relative overflow-x-hidden">
-      {/* BACKGROUND NEURAL NETWORK INTERAKTIF (#251FBC) */}
-      <NeuralNetworkBackground />
+      {/* BACKGROUND BATIK */}
+      <BatikBackground />
 
       <Header />
 

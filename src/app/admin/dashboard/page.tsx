@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
     { label: "Kelola Berita", desc: "Tambah & edit artikel berita", icon: Newspaper, color: "text-blue-400", href: "/admin/berita" },
     { label: "Kelola Prestasi", desc: "Upload pencapaian siswa", icon: Trophy, color: "text-amber-400", href: "/admin/prestasi" },
     { label: "Kalender Akademik", desc: "Atur jadwal & agenda sekolah", icon: Calendar, color: "text-emerald-400", href: "/admin/kalender" },
-    { label: "Organisasi & Ekskul", desc: "Update daftar ekskul", icon: Users, color: "text-purple-400", href: "/admin/organisasi" },
+    { label: "Daftar Tendik", desc: "Update daftar tendik", icon: Users, color: "text-purple-400", href: "/admin/organisasi" },
     { label: "Kelola Ulasan", desc: "Atur ulasan pilihan dari Google Maps", icon: Star, color: "text-sky-400", href: "/admin/ulasan" },
     { label: "Kelola FAQ", desc: "Jawab pertanyaan dari pengunjung", icon: HelpCircle, color: "text-rose-400", href: "/admin/faq" },
   ];

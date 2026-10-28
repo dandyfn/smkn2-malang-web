@@ -198,8 +198,8 @@ export default function Header() {
 
           {/* Tombol PPDB Desktop */}
           <div className="hidden md:flex items-center gap-3">
-            <a href="/#ppdb" className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-md shadow-amber-500/20">
-              Portal PPDB
+            <a href="https://siska.smkn2malang.sch.id" className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-md shadow-amber-500/20">
+              SISKA
             </a>
           </div>
 
@@ -325,11 +325,11 @@ export default function Header() {
 
             <div className="pt-2">
               <a
-                href="/#ppdb"
+                href="https://siska.smkn2malang.sch.id"
                 onClick={() => setIsMenuOpen(false)}
                 className="block text-center w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider transition"
               >
-                Portal PPDB
+                SISKA
               </a>
             </div>
           </div>
