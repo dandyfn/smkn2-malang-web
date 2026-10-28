@@ -1,11 +1,9 @@
-"use client";
-
-import { useEffect, useState, use } from "react";
-import { supabase } from "@/lib/supabase";
-import { ArrowLeft, Calendar, ExternalLink, Tag } from "lucide-react";
+import { cache } from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-
-// Import Header & Footer sesuai lokasi file proyek
+import { ArrowLeft, Calendar, ExternalLink, Tag } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -31,100 +29,84 @@ function getDirectImageUrl(url: string | undefined): string {
   return url;
 }
 
-export default function BeritaDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = use(params);
-  const [berita, setBerita] = useState<BeritaDetail | null>(null);
-  const [loading, setLoading] = useState(true);
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
 
-  useEffect(() => {
-    const fetchDetailBerita = async () => {
-      let { data } = await supabase
-        .from("berita")
-        .select("*")
-        .eq("slug", resolvedParams.slug)
-        .eq("status", "published")
-        .single();
+// cache() supaya metadata dan halaman memakai 1 kali fetch yang sama
+const getBerita = cache(async (slug: string): Promise<BeritaDetail | null> => {
+  const bySlug = await supabase
+    .from("berita")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+  if (bySlug.data) return bySlug.data as BeritaDetail;
 
-      if (!data) {
-        const fallback = await supabase
-          .from("berita")
-          .select("*")
-          .eq("id", resolvedParams.slug)
-          .eq("status", "published")
-          .single();
-        data = fallback.data;
-      }
+  const byId = await supabase
+    .from("berita")
+    .select("*")
+    .eq("id", slug)
+    .eq("status", "published")
+    .maybeSingle();
+  return (byId.data as BeritaDetail) ?? null;
+});
 
-      if (data) setBerita(data);
-      setLoading(false);
-    };
-
-    fetchDetailBerita();
-  }, [resolvedParams.slug]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between">
-        <Header />
-        <div className="flex justify-center items-center py-32">
-          <p className="text-slate-400 animate-pulse text-sm">Memuat artikel berita...</p>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const berita = await getBerita(slug);
 
   if (!berita) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between">
-        <Header />
-        <div className="flex flex-col justify-center items-center py-32 space-y-4">
-          <h1 className="text-xl font-bold">Artikel Tidak Ditemukan</h1>
-          <p className="text-slate-400 text-sm">Berita tidak ditemukan atau belum dipublikasikan.</p>
-          <Link 
-            href="/" 
-            className="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 transition shadow-sm"
-          >
-            <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
-          </Link>
-        </div>
-        <Footer />
-      </div>
-    );
+    return { title: "Berita tidak ditemukan", robots: { index: false } };
   }
 
-  const rawUrl = berita.banner_url || berita.gambar_url;
-  const imageUrl = getDirectImageUrl(rawUrl);
+  const description =
+    berita.deskripsi_singkat?.trim() || stripHtml(berita.konten).slice(0, 160);
+  const image = getDirectImageUrl(berita.banner_url || berita.gambar_url);
+
+  return {
+    title: berita.judul,
+    description,
+    alternates: { canonical: `/berita/${berita.slug || slug}` },
+    openGraph: {
+      type: "article",
+      title: berita.judul,
+      description,
+      publishedTime: berita.created_at,
+      locale: "id_ID",
+      ...(image ? { images: [{ url: image }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: berita.judul,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+  };
+}
+
+export default async function BeritaDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const berita = await getBerita(slug);
+
+  if (!berita) notFound();
+
+  const imageUrl = getDirectImageUrl(berita.banner_url || berita.gambar_url);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between">
-      {/* Header Komponen */}
       <Header />
-
-      {/* Style Global untuk Konten HTML Tiptap */}
-      <style jsx global>{`
-        .berita-content img {
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          border-radius: 0.75rem;
-          max-width: 100%;
-          height: auto;
-        }
-        .berita-content h1 { font-size: 1.75rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #f8fafc; }
-        .berita-content h2 { font-size: 1.35rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #f1f5f9; }
-        .berita-content h3 { font-size: 1.15rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #e2e8f0; }
-        .berita-content p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; font-size: 0.95rem; }
-        .berita-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #cbd5e1; }
-        .berita-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; color: #cbd5e1; }
-        .berita-content blockquote { border-left: 4px solid #f59e0b; padding-left: 1rem; font-style: italic; color: #94a3b8; margin: 1rem 0; }
-        .berita-content u { text-decoration: underline; }
-      `}</style>
 
       <main className="flex-1 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-7xl mx-auto space-y-6">
-          
-          {/* Tombol Kembali */}
           <div>
             <Link
               href="/"
@@ -135,10 +117,7 @@ export default function BeritaDetailPage({ params }: { params: Promise<{ slug: s
             </Link>
           </div>
 
-          {/* Card Utama Berita */}
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 backdrop-blur-sm">
-            
-            {/* Tag Kategori & Tanggal */}
+          <article className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 backdrop-blur-sm">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 font-bold text-xs rounded-lg uppercase tracking-wider">
                 <Tag className="w-3.5 h-3.5" />
@@ -147,38 +126,32 @@ export default function BeritaDetailPage({ params }: { params: Promise<{ slug: s
 
               <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
                 <Calendar className="w-3.5 h-3.5 text-amber-400/80" />
-                <span>
+                <time dateTime={berita.created_at}>
                   {new Date(berita.created_at).toLocaleDateString("id-ID", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
+                    timeZone: "Asia/Jakarta",
                   })}
-                </span>
+                </time>
               </div>
             </div>
 
-            {/* Judul Utama */}
             <h1 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
               {berita.judul}
             </h1>
 
-            {/* Gambar Banner Utama */}
             {imageUrl && (
               <div className="rounded-2xl overflow-hidden border border-slate-800/80 w-full bg-slate-950">
                 <img
                   src={imageUrl}
                   alt={berita.judul}
                   referrerPolicy="no-referrer"
-                  crossOrigin="anonymous"
                   className="w-full h-auto max-h-[370px] object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
                 />
               </div>
             )}
 
-            {/* Link Penting (Akan muncul jika berita.link_penting terisi) */}
             {berita.link_penting && (
               <div className="p-4 bg-amber-400/10 border border-amber-400/20 rounded-2xl flex items-center justify-between gap-4">
                 <span className="text-xs sm:text-sm font-semibold text-amber-300">
@@ -196,16 +169,14 @@ export default function BeritaDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             )}
 
-            {/* Isi Konten Berita (Render HTML Tiptap) */}
             <div
               className="berita-content pt-4 border-t border-slate-800/80"
               dangerouslySetInnerHTML={{ __html: berita.konten }}
             />
-          </div>
+          </article>
         </div>
       </main>
 
-      {/* Footer Komponen */}
       <Footer />
     </div>
   );

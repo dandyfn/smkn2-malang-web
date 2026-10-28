@@ -63,3 +63,33 @@
 .animate-slide-right {
   animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.berita-content img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.75rem;
+  max-width: 100%;
+  height: auto;
+}
+.berita-content h1 { font-size: 1.75rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #f8fafc; }
+.berita-content h2 { font-size: 1.35rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #f1f5f9; }
+.berita-content h3 { font-size: 1.15rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #e2e8f0; }
+.berita-content p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; font-size: 0.95rem; }
+.berita-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #cbd5e1; }
+.berita-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; color: #cbd5e1; }
+.berita-content blockquote { border-left: 4px solid #f59e0b; padding-left: 1rem; font-style: italic; color: #94a3b8; margin: 1rem 0; }
+.berita-content u { text-decoration: underline; }
+
+.prestasi-content p { margin-bottom: 1rem; line-height: 1.75; color: #334155; }
+.prestasi-content h1 { font-size: 1.875rem; font-weight: 800; color: #0f172a; margin-top: 1.5rem; margin-bottom: 0.75rem; line-height: 1.25; }
+.prestasi-content h2 { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-top: 1.25rem; margin-bottom: 0.5rem; line-height: 1.3; }
+.prestasi-content h3 { font-size: 1.25rem; font-weight: 600; color: #334155; margin-top: 1rem; margin-bottom: 0.5rem; }
+.prestasi-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #334155; }
+.prestasi-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; color: #334155; }
+.prestasi-content li { margin-bottom: 0.25rem; }
+.prestasi-content blockquote { border-left: 4px solid #f59e0b; padding: 0.5rem 0 0.5rem 1rem; margin: 1rem 0; color: #64748b; font-style: italic; background-color: #fffbeb; border-radius: 0 0.5rem 0.5rem 0; }
+.prestasi-content u { text-decoration: underline; }
+.prestasi-content strong { font-weight: 700; color: #0f172a; }
+.prestasi-content em { font-style: italic; }
+.prestasi-content img { max-width: 100%; height: auto; border-radius: 0.75rem; }
