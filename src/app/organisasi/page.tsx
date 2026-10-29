@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
+import { motion, useReducedMotion } from "framer-motion";
+import MarqueeTrack from "@/components/MarqueeTrack";
 import { 
   Search, 
   Mail, 
@@ -76,6 +78,7 @@ const CARDS_ORGANISASI = [
 ];
 
 export default function OrganisasiPage() {
+  const reduceMotion = useReducedMotion();
   const [scale, setScale] = useState(1);
 
   const handleZoomIn = () => setScale((prev) => Math.min(prev + 0.25, 2.5));
@@ -123,25 +126,8 @@ export default function OrganisasiPage() {
 
   return (
     <div className="relative isolate min-h-screen flex flex-col bg-black text-slate-100">
-      {/* CSS KEYFRAMES: MARQUEE + MOTIF BATIK NEON */}
+      {/* STYLE MOTIF BATIK NEON (animasi denyut ditangani Framer Motion) */}
       <style jsx global>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0%);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-marquee-scroll {
-          display: flex;
-          width: max-content;
-          animation: marquee 35s linear infinite;
-        }
-        .animate-marquee-scroll:hover {
-          animation-play-state: paused;
-        }
-
         /* Motif batik mega mendung: kecil, banyak, baris berselang-seling (sudah diatur di dalam gambar tile) */
         .batik-neon {
           background-image: url("/images/batik-neon-tile.png");
@@ -152,22 +138,15 @@ export default function OrganisasiPage() {
                   drop-shadow(0 0 6px rgba(99, 102, 241, 0.85))
                   drop-shadow(0 0 14px rgba(79, 70, 229, 0.65));
         }
-        .batik-neon-pulse {
-          animation: batik-pulse 6s ease-in-out infinite;
-        }
-        @keyframes batik-pulse {
-          0%, 100% { opacity: 0.8; }
-          50% { opacity: 1; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .batik-neon-pulse { animation: none; }
-        }
       `}</style>
 
       {/* BACKGROUND BATIK NEON (menempel di layar, berada di belakang semua konten) */}
-      <div
+      <motion.div
         aria-hidden="true"
-        className="batik-neon batik-neon-pulse fixed inset-0 -z-10 pointer-events-none"
+        className="batik-neon fixed inset-0 -z-10 pointer-events-none"
+        initial={{ opacity: 0.8 }}
+        animate={reduceMotion ? { opacity: 0.9 } : { opacity: [0.8, 1, 0.8] }}
+        transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
       />
 
       <Header />
@@ -192,12 +171,14 @@ export default function OrganisasiPage() {
           <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
           <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
 
-          <div className="animate-marquee-scroll flex gap-6">
-            {[...CARDS_ORGANISASI, ...CARDS_ORGANISASI, ...CARDS_ORGANISASI].map((card, idx) => {
+          {/* Daftar kartu diulang 2x di sini supaya satu salinan cukup lebar untuk layar besar;
+              MarqueeTrack menggandakannya sekali lagi untuk efek loop mulus */}
+          <MarqueeTrack duration={35}>
+            {[...CARDS_ORGANISASI, ...CARDS_ORGANISASI].map((card, idx) => {
               const IconComponent = card.icon;
               return (
                 <div
-                  key={idx}
+                  key={`${card.title}-${idx}`}
                   className="w-[300px] sm:w-[360px] bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-2xl p-6 shadow-xl hover:border-amber-500/50 hover:bg-slate-900 transition space-y-3 shrink-0"
                 >
                   <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 font-bold border border-amber-500/20">
@@ -210,7 +191,7 @@ export default function OrganisasiPage() {
                 </div>
               );
             })}
-          </div>
+          </MarqueeTrack>
         </section>
 
         {/* GAMBAR STRUKTUR ORGANISASI INTERAKTIF (STICKY ATAS) */}
