@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { supabase } from "@/lib/supabase";
+import { DATA_EKSTRAKURIKULER } from "@/data/ekstrakurikuler";
+import { DATA_KONSENTRASI } from "@/data/konsentrasi-keahlian";
 
-// Sitemap dibuat ulang paling cepat tiap 1 jam, jadi konten baru ikut masuk otomatis
 export const revalidate = 3600;
 
 const HALAMAN = [
@@ -23,10 +24,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
   }));
 
+  const halamanEkskul: MetadataRoute.Sitemap = DATA_EKSTRAKURIKULER.map((e) => ({
+    url: `${SITE_URL}/ekstrakurikuler/${e.slug}`,
+  }));
+
+  const halamanKonsentrasi: MetadataRoute.Sitemap = DATA_KONSENTRASI.map((k) => ({
+    url: `${SITE_URL}/konsentrasi-keahlian/${k.id}`,
+  }));
+
   let halamanBerita: MetadataRoute.Sitemap = [];
   let halamanPrestasi: MetadataRoute.Sitemap = [];
 
-  // Kalau Supabase gagal dihubungi, sitemap tetap jadi dan build tidak gagal
   try {
     const { data: berita } = await supabase
       .from("berita")
@@ -48,5 +56,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap: gagal mengambil data", err);
   }
 
-  return [...halamanStatis, ...halamanBerita, ...halamanPrestasi];
+  return [
+    ...halamanStatis,
+    ...halamanEkskul,
+    ...halamanKonsentrasi,
+    ...halamanBerita,
+    ...halamanPrestasi,
+  ];
 }
