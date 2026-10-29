@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import { ArrowRight, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 interface BeritaItem {
@@ -105,8 +106,6 @@ export default function Berita() {
                 </button>
               </div>
             )}
-
-        
           </div>
         </div>
 
@@ -138,12 +137,12 @@ export default function Berita() {
                     {/* Link Gambar Banner */}
                     <Link href={beritaUrl} className="block overflow-hidden h-44 bg-slate-700 relative">
                       {imgSrc ? (
-                        <img 
-                          src={imgSrc} 
+                        <Image
+                          src={imgSrc}
                           alt={item.judul}
-                          referrerPolicy="no-referrer"
-                          crossOrigin="anonymous"
-                          className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                          fill
+                          sizes="(min-width: 768px) 33vw, 100vw"
+                          className="object-cover group-hover:scale-105 transition duration-300"
                           onError={(e) => {
                             e.currentTarget.style.display = "none";
                           }}

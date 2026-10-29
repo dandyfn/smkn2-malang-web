@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import { Quote, ChevronRight, X } from "lucide-react";
 
 export default function Sambutan() {
@@ -52,12 +53,16 @@ export default function Sambutan() {
         {/* Kolom Kiri: Card Foto Kepala Sekolah */}
         <div className="md:col-span-5 flex justify-center">
           <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xl text-center max-w-sm w-full">
-            <div className="w-full h-60 sm:h-72 bg-slate-50 rounded-2xl mb-4 overflow-hidden border border-slate-200 flex items-center justify-center p-2">
-              <img
-                src="/images/kepalasekolah.png"
-                alt="Bapak Slamet Winarto, M.Pd"
-                className="max-h-full w-auto object-contain"
-              />
+            <div className="w-full h-60 sm:h-72 bg-slate-50 rounded-2xl mb-4 overflow-hidden border border-slate-200 p-2">
+              <div className="relative w-full h-full">
+                <Image
+                  src="/images/kepalasekolah.png"
+                  alt="Bapak Slamet Winarto, M.Pd"
+                  fill
+                  sizes="(min-width: 768px) 384px, 90vw"
+                  className="object-contain"
+                />
+              </div>
             </div>
             <h4 className="font-extrabold text-slate-900 text-base sm:text-lg">
               Bapak Slamet Winarto, M.Pd
@@ -81,7 +86,7 @@ export default function Sambutan() {
 
           <div className="text-slate-600 text-sm sm:text-base leading-relaxed space-y-4 font-normal">
             <p className="italic font-medium text-slate-800">
-              "Assalamualaikum Wr. Wb."
+              &ldquo;Assalamualaikum Wr. Wb.&rdquo;
             </p>
             <p>
               Puji Syukur ke hadirat Allah SWT, karena berkat karunia rahmat dan hidayah-Nya, pada akhirnya website SMK Negeri 2 Malang dapat diluncurkan di dunia maya.

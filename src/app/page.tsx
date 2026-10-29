@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import MitraIndustri from "@/components/MitraIndustri";
@@ -7,6 +8,11 @@ import DividerWave from "@/components/DividerWave";
 import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+
+// Canonical khusus beranda. Judul dan deskripsi tetap diambil dari layout.tsx
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 // Tambahkan alamat jalan dan nomor telepon resmi sekolah di sini bila sudah ada datanya
 const jsonLd = {
