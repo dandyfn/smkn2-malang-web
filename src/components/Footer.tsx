@@ -10,7 +10,7 @@ const sections: FooterSection[] = [
     title: "Unit Produksi",
     links: [
       { label: "Aula SC Pertamina", href: "https://aula.smkn2malang.sch.id/" },
-      { label: "KADOEA Senior Living", href: "" },
+      { label: "KADOEA Senior Living", href: "/kadoea" },
       { label: "Edotel", href: "" },
       { label: "TSA Samuphahita", href: "" },
     ],
@@ -59,6 +59,17 @@ function FooterLinkItem({ label, href }: FooterLink) {
         >
           {label}
         </span>
+      </li>
+    );
+  }
+
+  // Halaman internal (diawali "/") dibuka di tab yang sama
+  if (href.startsWith("/")) {
+    return (
+      <li>
+        <a href={href} className="hover:text-amber-400 transition">
+          {label}
+        </a>
       </li>
     );
   }

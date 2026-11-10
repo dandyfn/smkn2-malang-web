@@ -16,6 +16,7 @@ const HALAMAN = [
   "/organisasi",
   "/kalender",
   "/kontak",
+  "/kadoea",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

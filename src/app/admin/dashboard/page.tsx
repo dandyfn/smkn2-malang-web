@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { LogOut, Newspaper, Trophy, Calendar, Users, Star, HelpCircle } from "lucide-react";
+import { LogOut, Newspaper, Trophy, Calendar, Users, Star, HelpCircle, HeartHandshake } from "lucide-react";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>("");
   const [loading, setLoading] = useState(true);
   const [pendingFaq, setPendingFaq] = useState(0);
+  const [pendingKadoea, setPendingKadoea] = useState(0);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -27,6 +28,13 @@ export default function AdminDashboardPage() {
           .select("id", { count: "exact", head: true })
           .is("answer", null);
         setPendingFaq(count ?? 0);
+
+        // KADOEA: pertanyaan belum dijawab + ulasan pengunjung yang belum disetujui
+        const [faqK, ulasanK] = await Promise.all([
+          supabase.from("kadoea_faq").select("id", { count: "exact", head: true }).is("jawaban", null),
+          supabase.from("kadoea_ulasan").select("id", { count: "exact", head: true }).eq("sumber", "pengunjung").eq("is_published", false),
+        ]);
+        setPendingKadoea((faqK.count ?? 0) + (ulasanK.count ?? 0));
       }
     };
     checkAuth();
@@ -52,6 +60,7 @@ export default function AdminDashboardPage() {
     { label: "Daftar Tendik", desc: "Update daftar tendik", icon: Users, color: "text-purple-400", href: "/admin/organisasi" },
     { label: "Kelola Ulasan", desc: "Atur ulasan pilihan dari Google Maps", icon: Star, color: "text-sky-400", href: "/admin/ulasan" },
     { label: "Kelola FAQ", desc: "Jawab pertanyaan dari pengunjung", icon: HelpCircle, color: "text-rose-400", href: "/admin/faq" },
+    { label: "KADOEA Senior Living", desc: "Kelola paket, jawab FAQ, dan setujui ulasan KADOEA", icon: HeartHandshake, color: "text-orange-400", href: "/admin/kadoea" },
   ];
 
   return (
@@ -83,6 +92,11 @@ export default function AdminDashboardPage() {
               {item.href === "/admin/faq" && pendingFaq > 0 && (
                 <span className="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-full">
                   {pendingFaq > 99 ? "99+" : pendingFaq} baru
+                </span>
+              )}
+              {item.href === "/admin/kadoea" && pendingKadoea > 0 && (
+                <span className="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-full">
+                  {pendingKadoea > 99 ? "99+" : pendingKadoea} baru
                 </span>
               )}
             </div>

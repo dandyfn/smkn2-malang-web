@@ -3,11 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowDown, HelpCircle, Phone, MapPin, Globe, Mail, Star, ExternalLink, Check, MessageCircle,
-  BedDouble, HeartPulse, Utensils, Users, ShieldCheck, Trees, Sparkles,
 } from "lucide-react";
-import {
-  KADOEA_KONTAK, KADOEA_STATISTIK, KADOEA_PAKET, KADOEA_FASILITAS, KADOEA_ULASAN, type Fasilitas,
-} from "@/data/kadoea";
+import { KADOEA_KONTAK, KADOEA_STATISTIK, type Paket, type Ulasan } from "@/data/kadoea";
+import StarNetwork from "./StarNetwork";
+import KadoeaUlasanForm from "./KadoeaUlasanForm";
 
 // Label kecil di atas judul section, sama dengan gaya beranda sekolah
 function LabelGelap({ children }: { children: React.ReactNode }) {
@@ -117,7 +116,7 @@ export function KadoeaTentang() {
 }
 
 /* ---------------- 3. PAKET ---------------- */
-export function KadoeaPaket() {
+export function KadoeaPaket({ paket }: { paket: Paket[] }) {
   return (
     <section id="paket" className="bg-slate-950 px-6 py-24">
       <div className="max-w-6xl mx-auto">
@@ -129,8 +128,11 @@ export function KadoeaPaket() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {KADOEA_PAKET.map((p, i) => (
+        {paket.length === 0 && (
+          <p className="text-center text-slate-400">Informasi paket segera hadir. Silakan hubungi kami.</p>
+        )}
+        <div className={`grid gap-6 ${paket.length >= 3 ? "md:grid-cols-3" : paket.length === 2 ? "md:grid-cols-2 max-w-4xl mx-auto" : "max-w-md mx-auto"}`}>
+          {paket.map((p, i) => (
             <div
               key={p.nama}
               className={`relative bg-slate-900/90 border p-8 rounded-2xl text-white shadow-2xl transition-all duration-300 group flex flex-col ${
@@ -172,105 +174,90 @@ export function KadoeaPaket() {
   );
 }
 
-/* ---------------- 4. FASILITAS ---------------- */
-const IKON: Record<Fasilitas["ikon"], React.ElementType> = {
-  bed: BedDouble, heart: HeartPulse, utensils: Utensils, users: Users,
-  shield: ShieldCheck, trees: Trees, sparkles: Sparkles, phone: Phone,
-};
-
-export function KadoeaFasilitas() {
+/* ---------------- 4. ULASAN ---------------- */
+export function KadoeaUlasan({ ulasan }: { ulasan: Ulasan[] }) {
+  const ada = ulasan.length > 0;
   return (
-    <section id="fasilitas" className="bg-white text-slate-900 px-6 py-24">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <LabelTerang>Fasilitas</LabelTerang>
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Nyaman, Aman, dan Terawat</h2>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {KADOEA_FASILITAS.map((f) => {
-            const Icon = IKON[f.ikon];
-            return (
-              <div
-                key={f.nama}
-                className="bg-slate-50/70 border border-slate-200/80 p-6 rounded-2xl hover:border-amber-400 hover:shadow-lg transition group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-blue-900 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                  <Icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold mb-1.5">{f.nama}</h3>
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed">{f.deskripsi}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
+    <section id="ulasan" className="relative overflow-hidden bg-gradient-to-b from-white to-amber-50/60 text-slate-900 px-6 py-24">
+      {/* Latar neural link dengan titik berbentuk bintang */}
+      <StarNetwork />
 
-/* ---------------- 5. ULASAN ---------------- */
-export function KadoeaUlasan() {
-  const ada = KADOEA_ULASAN.length > 0;
-  return (
-    <section id="ulasan" className="bg-slate-50 text-slate-900 px-6 py-24">
-      <div className="max-w-6xl mx-auto">
+      <div className="relative z-10 max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <LabelTerang>Ulasan Tamu</LabelTerang>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Cerita dari Keluarga Tamu Kami</h2>
-          <p className="text-slate-500 text-sm mt-2">Ulasan pilihan dari Google Maps.</p>
+          <p className="text-slate-500 text-sm mt-2">Ulasan dari Google Maps dan dari pengunjung website ini.</p>
         </div>
 
         {ada ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {KADOEA_ULASAN.map((u) => (
-              <div key={u.nama + u.isi.slice(0, 10)} className="bg-white border border-slate-200/80 p-6 rounded-2xl flex flex-col justify-between shadow-sm">
+            {ulasan.map((u) => (
+              <div key={u.nama + u.isi.slice(0, 10)} className="bg-white/90 backdrop-blur border border-slate-200/80 p-6 rounded-2xl flex flex-col justify-between shadow-sm">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="font-bold text-blue-600">Google</span>
+                    {u.sumber === "pengunjung" ? (
+                      <span className="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Pengunjung</span>
+                    ) : (
+                      <span className="font-bold text-blue-600">Google</span>
+                    )}
                     <div className="flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star key={i} className={`w-4 h-4 ${i < u.rating ? "fill-amber-400 text-amber-400" : "text-slate-300"}`} />
                       ))}
                     </div>
                   </div>
-                  <p className="text-slate-600 text-sm sm:text-base italic leading-relaxed">“{u.isi}”</p>
+                  <p className="text-slate-600 text-sm sm:text-base italic leading-relaxed whitespace-pre-line">“{u.isi}”</p>
                 </div>
                 <div className="mt-5">
-                  <p className="text-sm font-bold text-slate-800">{u.nama}</p>
+                  {u.profileUrl ? (
+                    <a href={u.profileUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-slate-800 hover:underline">
+                      {u.nama}
+                    </a>
+                  ) : (
+                    <p className="text-sm font-bold text-slate-800">{u.nama}</p>
+                  )}
                   {u.waktu && <p className="text-xs text-slate-400">{u.waktu}</p>}
                 </div>
+                {u.balasan && (
+                  <div className="mt-4 border-l-2 border-amber-400 bg-amber-50/80 rounded-r-xl px-4 py-3">
+                    <p className="text-[11px] font-black uppercase tracking-wide text-amber-700">Balasan dari KADOEA</p>
+                    <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line mt-1">{u.balasan}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm">
-            <div className="flex justify-center gap-1 mb-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="w-6 h-6 fill-amber-400 text-amber-400" />
-              ))}
-            </div>
-            <p className="text-slate-600">
-              Baca pengalaman keluarga yang telah mempercayakan orang tuanya kepada KADOEA di Google Maps.
-            </p>
-          </div>
+          <p className="text-center text-slate-500">Belum ada ulasan yang ditampilkan. Jadilah yang pertama berbagi pengalaman.</p>
         )}
 
-        <div className="text-center mt-8">
-          <a
-            href={KADOEA_KONTAK.mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 text-sm font-bold text-blue-700 bg-blue-50 border border-blue-100 rounded-xl hover:bg-blue-100 transition"
-          >
-            Lihat ulasan di Google Maps <ExternalLink className="w-4 h-4" />
-          </a>
+        {/* Form ulasan + tautan Google Maps */}
+        <div className="grid lg:grid-cols-[1fr_320px] gap-5 mt-10 items-start">
+          <KadoeaUlasanForm />
+          <div className="bg-blue-900 text-white rounded-2xl p-6 shadow-lg">
+            <div className="flex gap-1 mb-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+              ))}
+            </div>
+            <p className="font-bold text-lg">Ulasan di Google Maps</p>
+            <p className="text-blue-100 text-sm mt-1 mb-5">Baca ulasan lainnya atau beri penilaian langsung di Google Maps.</p>
+            <a
+              href={KADOEA_KONTAK.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 text-sm font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl transition"
+            >
+              Buka Google Maps <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/* ---------------- 6. FOOTER + KONTAK ---------------- */
+/* ---------------- 5. FOOTER + KONTAK ---------------- */
 export function KadoeaFooter() {
   const k = KADOEA_KONTAK;
   return (
