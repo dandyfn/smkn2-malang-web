@@ -11,6 +11,7 @@ const sections: FooterSection[] = [
     links: [
       { label: "Aula SC Pertamina", href: "https://aula.smkn2malang.sch.id/" },
       { label: "KADOEA Senior Living", href: "/kadoea" },
+      { label: "Sumitra Kelana Wisata", href: "/sumitra" },
       { label: "Edotel", href: "" },
       { label: "TSA Samuphahita", href: "" },
     ],

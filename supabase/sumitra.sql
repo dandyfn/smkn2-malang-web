@@ -115,7 +115,10 @@ create table if not exists public.sumitra_pengaturan (
   tentang_foto_url text,
   updated_at timestamptz not null default now()
 );
-insert into public.sumitra_pengaturan (id) values (1) on conflict (id) do nothing;
+insert into public.sumitra_pengaturan (id, nomor_wa, instagram, facebook, jam_buka)
+values (1, '6285854153750', 'https://www.instagram.com/sumitrakelana',
+        'https://www.facebook.com/profile.php?id=100068734360328', '07.00 – 15.00 WIB')
+on conflict (id) do nothing;
 
 create table if not exists public.sumitra_paket (
   id uuid primary key default gen_random_uuid(),

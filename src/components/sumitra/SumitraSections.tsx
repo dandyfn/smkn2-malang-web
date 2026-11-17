@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Camera, MapPin, Clock, AtSign, Users } from "lucide-react";
 import { SUMITRA, tautanWa, type Pengaturan, type GaleriItem, type Mitra } from "@/data/sumitra";
-import { CorakRute, CorakTitik } from "./Corak";
+import { CorakTitik } from "./Corak";
 import { IkonWa } from "./SumitraHeader";
 
 export function JudulKecil({ children, gelap = false }: { children: React.ReactNode; gelap?: boolean }) {
@@ -19,14 +19,15 @@ export function SumitraHero({ pengaturan }: { pengaturan: Pengaturan }) {
   const wa = tautanWa(pengaturan.nomorWa);
   return (
     <section id="beranda" className="relative min-h-[600px] flex items-center px-4 sm:px-6 py-20 sm:py-24 bg-slate-800 overflow-hidden">
-      {pengaturan.heroFotoUrl ? (
-        <>
-          <Image src={pengaturan.heroFotoUrl} alt="" fill priority sizes="100vw" className="object-cover" />
-          <div className="absolute inset-0 bg-slate-950/65" />
-        </>
-      ) : (
-        <CorakRute terang />
-      )}
+      <Image
+        src={pengaturan.heroFotoUrl || SUMITRA.heroBawaan}
+        alt="Pemandangan Gunung Bromo"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-slate-950/65 sm:bg-transparent sm:bg-gradient-to-r sm:from-slate-950/85 sm:via-slate-950/55 sm:to-slate-950/20" />
       <div className="relative max-w-[1200px] mx-auto w-full">
         <p className="inline-block bg-amber-400 text-slate-900 text-xs font-extrabold tracking-[0.08em] px-3.5 py-1.5 rounded-full">
           TRAVEL AGENT SEKOLAH SEJAK {SUMITRA.berdiri}
@@ -75,16 +76,13 @@ export function SumitraTentang({ pengaturan }: { pengaturan: Pengaturan }) {
     <section id="tentang" className="bg-white text-slate-900 px-4 sm:px-6 py-20 sm:py-24">
       <div className="max-w-[1200px] mx-auto flex flex-wrap gap-10 lg:gap-14 items-center">
         <div className="relative flex-[1_1_420px] min-w-0 aspect-[4/3] rounded-3xl overflow-hidden bg-slate-100">
-          {pengaturan.tentangFotoUrl ? (
-            <Image src={pengaturan.tentangFotoUrl} alt="Kegiatan Sumitra Kelana Wisata" fill sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
-          ) : (
-            <div className="absolute inset-0 bg-slate-950 text-white flex flex-col justify-center p-8 sm:p-10 overflow-hidden">
-              <CorakRute terang />
-              <p className="relative text-amber-400 text-sm font-extrabold tracking-[0.08em]">SUMITRA KELANA WISATA</p>
-              <p className="relative mt-3 text-3xl sm:text-4xl font-extrabold leading-tight">Teman untuk berkelana sejak {SUMITRA.berdiri}</p>
-              <p className="relative mt-3 text-slate-300">Siswa, alumni, dan guru Pariwisata SMKN 2 Malang.</p>
-            </div>
-          )}
+          <Image
+            src={pengaturan.tentangFotoUrl || SUMITRA.tentangBawaan}
+            alt="Rombongan peserta tur Sumitra Kelana Wisata di Gunung Bromo"
+            fill
+            sizes="(min-width: 1024px) 560px, 100vw"
+            className="object-cover"
+          />
         </div>
         <div className="flex-[1_1_460px] min-w-0">
           <JudulKecil>Tentang Kami</JudulKecil>
@@ -221,7 +219,7 @@ export function SumitraFooter({ pengaturan }: { pengaturan: Pengaturan }) {
           <p className="flex gap-2"><MapPin className="w-4 h-4 mt-1 shrink-0 text-amber-400" aria-hidden /> {SUMITRA.alamat}</p>
           <p className="flex gap-2">
             <Clock className="w-4 h-4 mt-1 shrink-0 text-amber-400" aria-hidden />
-            {pengaturan.jamBuka || "Jam buka: hubungi kami lewat WhatsApp"}
+            {pengaturan.jamBuka ? `Jam buka ${pengaturan.jamBuka}` : "Jam buka: hubungi kami lewat WhatsApp"}
           </p>
           <a href={SUMITRA.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-amber-400 font-semibold hover:underline">
             Buka di Google Maps

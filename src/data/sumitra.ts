@@ -59,6 +59,10 @@ export const SUMITRA = {
   alamat: "Edotel SMKN 2 Malang, Jl. Veteran No. 17, Ketawanggede, Lowokwaru, Kota Malang, Jawa Timur 65145",
   alamatSingkat: "Edotel SMKN 2 Malang, Jl. Veteran No. 17, Malang",
   mapsUrl: "https://maps.google.com/?q=SMK+Negeri+2+Malang",
+  /** Foto hero bawaan, dipakai selama admin belum mengunggah foto hero sendiri */
+  heroBawaan: "/images/sumitra/hero-bromo.jpg",
+  /** Foto section Tentang bawaan (rombongan peserta di Bromo) */
+  tentangBawaan: "/images/sumitra/tentang.jpg",
 };
 
 export const JENIS_PAKET: { id: JenisPaket; label: string }[] = [
@@ -94,10 +98,10 @@ export const PILIHAN_FIELD: { id: FieldWa; label: string }[] = [
 export const FIELD_PAKET: FieldWa[] = ["tanggal", "jumlah", "bayar"];
 
 export const SUMITRA_PENGATURAN: Pengaturan = {
-  nomorWa: "",
-  instagram: "",
-  facebook: "",
-  jamBuka: "",
+  nomorWa: "6285854153750",
+  instagram: "https://www.instagram.com/sumitrakelana",
+  facebook: "https://www.facebook.com/profile.php?id=100068734360328",
+  jamBuka: "07.00 – 15.00 WIB",
   besaranDp: "",
   aturanTambahan: [],
   logoUrl: null,
