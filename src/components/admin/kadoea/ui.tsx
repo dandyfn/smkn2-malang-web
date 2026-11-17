@@ -1,4 +1,4 @@
-// Komponen kecil yang dipakai bersama oleh ketiga panel admin KADOEA
+// Komponen kecil yang dipakai bersama oleh panel admin KADOEA dan Sumitra
 import { Pencil, Trash2 } from "lucide-react";
 
 export const inputCls =
@@ -46,13 +46,13 @@ export function AksiBaris({
 
 // Baris centang "Tayangkan" + input urutan, dipakai di semua formulir
 export function TayangDanUrutan({
-  tayang, urutan, onTayang, onUrutan,
-}: { tayang: boolean; urutan: number; onTayang: (v: boolean) => void; onUrutan: (v: number) => void }) {
+  tayang, urutan, onTayang, onUrutan, label = "Tayangkan di halaman KADOEA",
+}: { tayang: boolean; urutan: number; onTayang: (v: boolean) => void; onUrutan: (v: number) => void; label?: string }) {
   return (
     <div className="flex flex-wrap items-center gap-4">
       <label className="inline-flex items-center gap-2 text-sm text-slate-300">
         <input type="checkbox" checked={tayang} onChange={(e) => onTayang(e.target.checked)} />
-        Tayangkan di halaman KADOEA
+        {label}
       </label>
       <label className="inline-flex items-center gap-2 text-sm text-slate-300">
         Urutan

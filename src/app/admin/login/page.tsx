@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { ambilPeranSaya, bolehBuka, halamanAwal } from "@/lib/adminPeran";
 import NeuralNetworkBackground from "@/components/NeuralNetworkBackground";
 import { Lock, Mail, ArrowRight, ShieldAlert } from "lucide-react";
 
@@ -13,22 +14,46 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Arahkan ke halaman sesuai peran akun. "next" dipakai oleh alamat pendek /sumitra/admin.
+  const arahkan = async (userId: string) => {
+    const peran = await ambilPeranSaya(userId);
+    if (!peran) {
+      await supabase.auth.signOut();
+      setErrorMsg("Akun ini tidak memiliki akses admin atau sedang dinonaktifkan. Hubungi admin sekolah.");
+      setLoading(false);
+      return;
+    }
+    const next = new URLSearchParams(window.location.search).get("next");
+    const tujuan = next && next.startsWith("/admin/") && bolehBuka(peran, next.split("?")[0]) ? next : halamanAwal(peran);
+    router.replace(tujuan);
+  };
+
+  // Sudah login sebelumnya: langsung arahkan; tampilkan pesan bila dikeluarkan karena tidak punya akses
+  useEffect(() => {
+    const galat = new URLSearchParams(window.location.search).get("galat");
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) arahkan(session.user.id);
+      else if (galat === "akses") setErrorMsg("Akun ini tidak memiliki akses admin atau sedang dinonaktifkan. Hubungi admin sekolah.");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
+    if (error || !data.user) {
       setErrorMsg("Email atau password admin salah!");
       setLoading(false);
     } else {
-      // Login Berhasil -> Arahkan ke Dashboard Admin
-      router.push("/admin/dashboard");
+      // Login berhasil -> arahkan sesuai peran (sekolah: dashboard, Sumitra: panel Sumitra)
+      await arahkan(data.user.id);
     }
   };
 
@@ -46,7 +71,7 @@ export default function AdminLoginPage() {
           </div>
           <h1 className="text-2xl font-black tracking-wide">PORTAL ADMIN</h1>
           <p className="text-xs text-slate-400">
-            Masuk untuk mengelola berita, prestasi, kalender, organisasi, dan ulasan sekolah.
+            Masuk untuk mengelola konten website sekolah, KADOEA, dan Sumitra Kelana Wisata.
           </p>
         </div>
 
@@ -61,7 +86,7 @@ export default function AdminLoginPage() {
         {/* FORM LOGIN */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-300">Email Admin</label>
+            <label className="text-xs font-bold text-slate-300">Email</label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
               <input
@@ -95,7 +120,7 @@ export default function AdminLoginPage() {
             disabled={loading}
             className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-amber-400/10 disabled:opacity-50"
           >
-            {loading ? "Memproses Login..." : "Masuk ke Dashboard"}
+            {loading ? "Memproses Login..." : "Masuk"}
             {!loading && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>

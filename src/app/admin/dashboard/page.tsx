@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { LogOut, Newspaper, Trophy, Calendar, Users, Star, HelpCircle, HeartHandshake } from "lucide-react";
+import { LogOut, Newspaper, Trophy, Calendar, Users, Star, HelpCircle, HeartHandshake, Compass, UserCog } from "lucide-react";
+import { ambilPeranSaya, halamanAwal } from "@/lib/adminPeran";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [pendingFaq, setPendingFaq] = useState(0);
   const [pendingKadoea, setPendingKadoea] = useState(0);
+  const [pendingSumitra, setPendingSumitra] = useState(0);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -19,6 +21,12 @@ export default function AdminDashboardPage() {
       if (!session) {
         router.push("/admin/login");
       } else {
+        // Dashboard ini khusus admin sekolah; akun Sumitra diarahkan ke panelnya
+        const peran = await ambilPeranSaya(session.user.id);
+        if (peran !== "sekolah") {
+          router.replace(peran ? halamanAwal(peran) : "/admin/login");
+          return;
+        }
         setUserEmail(session.user.email ?? "");
         setLoading(false);
 
@@ -35,6 +43,14 @@ export default function AdminDashboardPage() {
           supabase.from("kadoea_ulasan").select("id", { count: "exact", head: true }).eq("sumber", "pengunjung").eq("is_published", false),
         ]);
         setPendingKadoea((faqK.count ?? 0) + (ulasanK.count ?? 0));
+
+        // Sumitra: pesanan baru + testimoni menunggu persetujuan + pertanyaan belum dijawab
+        const [pesananS, testiS, faqS] = await Promise.all([
+          supabase.from("sumitra_pesanan").select("id", { count: "exact", head: true }).eq("status", "baru"),
+          supabase.from("sumitra_testimoni").select("id", { count: "exact", head: true }).eq("is_published", false),
+          supabase.from("sumitra_faq").select("id", { count: "exact", head: true }).is("jawaban", null),
+        ]);
+        setPendingSumitra((pesananS.count ?? 0) + (testiS.count ?? 0) + (faqS.count ?? 0));
       }
     };
     checkAuth();
@@ -61,6 +77,8 @@ export default function AdminDashboardPage() {
     { label: "Kelola Ulasan", desc: "Atur ulasan pilihan dari Google Maps", icon: Star, color: "text-sky-400", href: "/admin/ulasan" },
     { label: "Kelola FAQ", desc: "Jawab pertanyaan dari pengunjung", icon: HelpCircle, color: "text-rose-400", href: "/admin/faq" },
     { label: "KADOEA Senior Living", desc: "Kelola paket, jawab FAQ, dan setujui ulasan KADOEA", icon: HeartHandshake, color: "text-orange-400", href: "/admin/kadoea" },
+    { label: "Sumitra Kelana Wisata", desc: "Kelola paket, layanan, pesanan, galeri, testimoni, dan FAQ", icon: Compass, color: "text-teal-400", href: "/admin/sumitra" },
+    { label: "Kelola Akun", desc: "Buat akun admin Sumitra & siswa, atur peran dan status", icon: UserCog, color: "text-slate-300", href: "/admin/akun" },
   ];
 
   return (
@@ -97,6 +115,11 @@ export default function AdminDashboardPage() {
               {item.href === "/admin/kadoea" && pendingKadoea > 0 && (
                 <span className="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-full">
                   {pendingKadoea > 99 ? "99+" : pendingKadoea} baru
+                </span>
+              )}
+              {item.href === "/admin/sumitra" && pendingSumitra > 0 && (
+                <span className="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-full">
+                  {pendingSumitra > 99 ? "99+" : pendingSumitra} baru
                 </span>
               )}
             </div>
