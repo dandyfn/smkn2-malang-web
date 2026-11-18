@@ -51,7 +51,7 @@ function unduhRekap(items: PesananRow[]) {
   URL.revokeObjectURL(url);
 }
 
-export default function PesananPanel() {
+export default function PesananPanel({ onUbah }: { onUbah?: () => void }) {
   const [items, setItems] = useState<PesananRow[]>([]);
   const [filter, setFilter] = useState<StatusPesanan | "semua">("baru");
   const [catatan, setCatatan] = useState<Record<string, string>>({});
@@ -61,7 +61,10 @@ export default function PesananPanel() {
     if (error) setMsg({ type: "err", text: "Gagal memuat pesanan: " + error.message });
     else setItems((data ?? []) as PesananRow[]);
   }, []);
-  const load = useCallback(() => ambil().then(terapkan), [terapkan]);
+  const load = useCallback(() => {
+    onUbah?.();
+    return ambil().then(terapkan);
+  }, [terapkan, onUbah]);
   useEffect(() => {
     ambil().then(terapkan);
   }, [terapkan]);

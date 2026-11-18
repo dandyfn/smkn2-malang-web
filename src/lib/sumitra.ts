@@ -124,3 +124,34 @@ export async function getPaketSumitra(slug: string): Promise<{ paket: Paket | nu
     return { paket: SUMITRA_PAKET.find((p) => p.slug === slug) ?? null, pengaturan: SUMITRA_PENGATURAN };
   }
 }
+
+export const GALERI_PER_HALAMAN = 24;
+
+/** Foto galeri terbaru untuk halaman /sumitra/dokumentasi (halaman pertama + jumlah total). */
+export async function getGaleriSumitra(): Promise<{ foto: GaleriItem[]; total: number }> {
+  try {
+    const { data, error, count } = await supabase
+      .from("sumitra_galeri")
+      .select("*", { count: "exact" })
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .range(0, GALERI_PER_HALAMAN - 1);
+    if (error) return { foto: [], total: 0 };
+    return {
+      foto: (data as GaleriRow[]).map((r) => ({ id: r.id, fotoUrl: r.foto_url, keterangan: r.keterangan })),
+      total: count ?? data.length,
+    };
+  } catch {
+    return { foto: [], total: 0 };
+  }
+}
+
+/** Hanya pengaturan (kontak, logo), untuk halaman Sumitra selain beranda. */
+export async function getPengaturanSumitra(): Promise<Pengaturan> {
+  try {
+    const { data, error } = await supabase.from("sumitra_pengaturan").select("*").eq("id", 1).maybeSingle();
+    return !error && data ? keDataPengaturan(data as PengaturanRow) : SUMITRA_PENGATURAN;
+  } catch {
+    return SUMITRA_PENGATURAN;
+  }
+}

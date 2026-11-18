@@ -162,7 +162,7 @@ export function SumitraGaleri({ galeri }: { galeri: GaleriItem[] }) {
                 key={g.id}
                 className={`relative rounded-2xl overflow-hidden bg-slate-200 ${
                   i === 0 ? "col-span-2 row-span-2 min-h-[280px] md:min-h-[360px]" : "min-h-[150px] md:min-h-[174px]"
-                }`}
+                } ${i >= 3 ? "max-md:hidden" : ""}`}
               >
                 <Image src={g.fotoUrl} alt={g.keterangan || "Dokumentasi perjalanan Sumitra"} fill
                   sizes={i === 0 ? "(min-width: 768px) 600px, 100vw" : "(min-width: 768px) 300px, 50vw"} className="object-cover" />
@@ -174,6 +174,15 @@ export function SumitraGaleri({ galeri }: { galeri: GaleriItem[] }) {
               </li>
             ))}
           </ul>
+        )}
+        {/* Di HP hanya 3 foto terbaru yang tampil; sisanya lewat halaman dokumentasi */}
+        {galeri.length > 3 && (
+          <Link
+            href="/sumitra/dokumentasi"
+            className="md:hidden mt-5 flex items-center justify-center gap-2 w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3.5 rounded-xl transition"
+          >
+            <Camera className="w-4 h-4" aria-hidden /> Lihat semua dokumentasi
+          </Link>
         )}
       </div>
     </section>

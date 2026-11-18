@@ -4,7 +4,7 @@
 // - Admin sekolah & admin Sumitra (Pak Roy): semua menu.
 // - Kontributor (siswa): hanya menu Galeri.
 // Tampilan dirancang nyaman dipakai dari HP.
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -33,12 +33,34 @@ const TABS = [
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
+// Angka penanda di tab: pesanan baru, pertanyaan belum dijawab, testimoni belum dibalas
+type Penanda = Partial<Record<TabId, number>>;
+const hitungPenanda = async (): Promise<Penanda> => {
+  const [pesanan, faq, testi] = await Promise.all([
+    supabase.from("sumitra_pesanan").select("id", { count: "exact", head: true }).eq("status", "baru"),
+    supabase.from("sumitra_faq").select("id", { count: "exact", head: true }).is("jawaban", null),
+    supabase.from("sumitra_testimoni").select("id", { count: "exact", head: true }).is("balasan", null),
+  ]);
+  return { pesanan: pesanan.count ?? 0, faq: faq.count ?? 0, testimoni: testi.count ?? 0 };
+};
+const KETERANGAN_PENANDA: Partial<Record<TabId, string>> = {
+  pesanan: "pesanan baru",
+  faq: "pertanyaan belum dijawab",
+  testimoni: "testimoni belum dibalas",
+};
+
 export default function AdminSumitraPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState("");
   const [peran, setPeran] = useState<Peran | null>(null);
   const [tab, setTab] = useState<TabId>("pesanan");
+  const [penanda, setPenanda] = useState<Penanda>({});
+
+  // Dipanggil panel setelah menyimpan, supaya angka penanda ikut berubah
+  const perbaruiPenanda = useCallback(() => {
+    hitungPenanda().then(setPenanda);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -57,6 +79,14 @@ export default function AdminSumitraPage() {
       else if (dariAlamat && TABS.some((t) => t.id === dariAlamat)) setTab(dariAlamat);
     })();
   }, [router]);
+
+  // Hitung penanda saat dibuka dan setiap 1 menit (pesanan/pertanyaan baru dari pengunjung)
+  useEffect(() => {
+    if (peran !== "sekolah" && peran !== "sumitra") return;
+    hitungPenanda().then(setPenanda);
+    const t = setInterval(() => hitungPenanda().then(setPenanda), 60_000);
+    return () => clearInterval(t);
+  }, [peran]);
 
   async function keluar() {
     await supabase.auth.signOut();
@@ -116,6 +146,16 @@ export default function AdminSumitraPage() {
                   }`}
                 >
                   <t.icon className="w-4 h-4" /> {t.label}
+                  {(penanda[t.id] ?? 0) > 0 && (
+                    <span
+                      className={`min-w-5 h-5 px-1.5 rounded-full text-[11px] font-black flex items-center justify-center ${
+                        tab === t.id ? "bg-slate-950 text-amber-400" : "bg-amber-500 text-slate-950"
+                      }`}
+                      aria-label={`${penanda[t.id]} ${KETERANGAN_PENANDA[t.id]}`}
+                    >
+                      {(penanda[t.id] ?? 0) > 99 ? "99+" : penanda[t.id]}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -124,12 +164,12 @@ export default function AdminSumitraPage() {
 
         <p className="text-xs text-slate-500">Perubahan langsung tampil di halaman /sumitra setelah disimpan (muat ulang halaman untuk melihatnya).</p>
 
-        {tab === "pesanan" && isAdmin && <PesananPanel />}
+        {tab === "pesanan" && isAdmin && <PesananPanel onUbah={perbaruiPenanda} />}
         {tab === "paket" && isAdmin && <PaketPanel />}
         {tab === "layanan" && isAdmin && <LayananPanel />}
         {tab === "galeri" && <GaleriPanel isAdmin={isAdmin} userId={userId} />}
-        {tab === "testimoni" && isAdmin && <TestimoniPanel />}
-        {tab === "faq" && isAdmin && <FaqPanel />}
+        {tab === "testimoni" && isAdmin && <TestimoniPanel onUbah={perbaruiPenanda} />}
+        {tab === "faq" && isAdmin && <FaqPanel onUbah={perbaruiPenanda} />}
         {tab === "mitra" && isAdmin && <MitraPanel />}
         {tab === "pengaturan" && isAdmin && <PengaturanPanel />}
       </div>

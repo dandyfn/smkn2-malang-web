@@ -14,7 +14,7 @@ const ambil = () => supabase.from(TABEL).select("*").order("created_at", { ascen
 
 type Filter = "menunggu" | "belum-dibalas" | "semua";
 
-export default function TestimoniPanel() {
+export default function TestimoniPanel({ onUbah }: { onUbah?: () => void }) {
   const [items, setItems] = useState<TestimoniRow[]>([]);
   const [filter, setFilter] = useState<Filter>("menunggu");
   const [balasId, setBalasId] = useState<string | null>(null);
@@ -28,8 +28,9 @@ export default function TestimoniPanel() {
   // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
   const load = useCallback(() => {
     segarkanHalaman("sumitra");
+    onUbah?.();
     return ambil().then(terapkan);
-  }, [terapkan]);
+  }, [terapkan, onUbah]);
   useEffect(() => {
     ambil().then(terapkan);
   }, [terapkan]);

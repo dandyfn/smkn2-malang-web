@@ -16,7 +16,7 @@ type Filter = "menunggu" | "dijawab" | "semua";
 type Form = { pertanyaan: string; jawaban: string; is_published: boolean; sort_order: number };
 const kosong: Form = { pertanyaan: "", jawaban: "", is_published: true, sort_order: 0 };
 
-export default function FaqPanel() {
+export default function FaqPanel({ onUbah }: { onUbah?: () => void }) {
   const [items, setItems] = useState<FaqRow[]>([]);
   const [filter, setFilter] = useState<Filter>("menunggu");
   const [form, setForm] = useState<Form>(kosong);
@@ -33,8 +33,9 @@ export default function FaqPanel() {
   // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
   const load = useCallback(() => {
     segarkanHalaman("sumitra");
+    onUbah?.();
     return ambil().then(terapkan);
-  }, [terapkan]);
+  }, [terapkan, onUbah]);
 
   useEffect(() => {
     ambil().then(terapkan);

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 const HALAMAN: Record<string, { peran: string[]; jalur: { path: string; jenis?: "page" | "layout" }[] }> = {
   sumitra: {
     peran: ["sekolah", "sumitra", "kontributor_sumitra"],
-    jalur: [{ path: "/sumitra" }, { path: "/sumitra/paket/[slug]", jenis: "page" }],
+    jalur: [{ path: "/sumitra" }, { path: "/sumitra/dokumentasi" }, { path: "/sumitra/paket/[slug]", jenis: "page" }],
   },
   kadoea: { peran: ["sekolah"], jalur: [{ path: "/kadoea" }] },
 };
