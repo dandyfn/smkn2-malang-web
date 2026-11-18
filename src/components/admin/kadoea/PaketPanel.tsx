@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Check, Plus, Save, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { segarkanHalaman } from "@/lib/segarkanHalaman";
 import type { PaketRow } from "@/lib/kadoea";
 import { inputCls, Pesan, StatusBadge, AksiBaris, TayangDanUrutan, type Msg } from "./ui";
 
@@ -33,7 +34,11 @@ export default function PaketPanel() {
     if (error) setMsg({ type: "err", text: "Gagal memuat paket: " + error.message });
     else setItems((data ?? []) as PaketRow[]);
   }, []);
-  const load = useCallback(() => ambil().then(terapkan), [terapkan]);
+  // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
+  const load = useCallback(() => {
+    segarkanHalaman("kadoea");
+    return ambil().then(terapkan);
+  }, [terapkan]);
 
   useEffect(() => {
     ambil().then(terapkan);

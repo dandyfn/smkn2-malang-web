@@ -93,7 +93,7 @@ export default function AdminKadoeaPage() {
         </div>
 
         <p className="text-xs text-slate-500 -mt-4">
-          Perubahan tampil di halaman /kadoea paling lambat 1 menit setelah disimpan.
+          Perubahan langsung tampil di halaman /kadoea setelah disimpan (muat ulang halaman untuk melihatnya).
         </p>
 
         {tab === "paket" && <PaketPanel />}

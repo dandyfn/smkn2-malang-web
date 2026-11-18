@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Plus, Save, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { segarkanHalaman } from "@/lib/segarkanHalaman";
 import { hapusFotoSumitra } from "@/lib/fotoSumitra";
 import type { PaketRow } from "@/lib/sumitra";
 import { JENIS_PAKET, LABEL_JENIS, teksHarga, type JenisPaket } from "@/data/sumitra";
@@ -40,7 +41,11 @@ export default function PaketPanel() {
     if (error) setMsg({ type: "err", text: "Gagal memuat paket: " + error.message });
     else setItems((data ?? []) as PaketRow[]);
   }, []);
-  const load = useCallback(() => ambil().then(terapkan), [terapkan]);
+  // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
+  const load = useCallback(() => {
+    segarkanHalaman("sumitra");
+    return ambil().then(terapkan);
+  }, [terapkan]);
   useEffect(() => {
     ambil().then(terapkan);
   }, [terapkan]);

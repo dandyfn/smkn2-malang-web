@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Save } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { segarkanHalaman } from "@/lib/segarkanHalaman";
 import type { PengaturanRow } from "@/lib/sumitra";
 import { nomorWaInternasional } from "@/data/sumitra";
 import { inputCls, labelCls, kartu, tombolUtama, Pesan, FieldFoto, type Msg } from "./bersama";
@@ -58,7 +59,8 @@ export default function PengaturanPanel() {
     });
     setSaving(false);
     if (error) return setMsg({ type: "err", text: "Gagal menyimpan: " + error.message });
-    setMsg({ type: "ok", text: "Pengaturan disimpan. Halaman Sumitra diperbarui paling lambat 1 menit." });
+    await segarkanHalaman("sumitra");
+    setMsg({ type: "ok", text: "Pengaturan disimpan dan halaman Sumitra sudah diperbarui." });
     ambil().then(terapkan);
   }
 

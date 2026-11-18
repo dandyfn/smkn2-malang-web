@@ -122,7 +122,7 @@ export default function AdminSumitraPage() {
           </nav>
         )}
 
-        <p className="text-xs text-slate-500">Perubahan tampil di halaman /sumitra paling lambat 1 menit setelah disimpan.</p>
+        <p className="text-xs text-slate-500">Perubahan langsung tampil di halaman /sumitra setelah disimpan (muat ulang halaman untuk melihatnya).</p>
 
         {tab === "pesanan" && isAdmin && <PesananPanel />}
         {tab === "paket" && isAdmin && <PaketPanel />}

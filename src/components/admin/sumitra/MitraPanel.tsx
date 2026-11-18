@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Plus, Save, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { segarkanHalaman } from "@/lib/segarkanHalaman";
 import { hapusFotoSumitra } from "@/lib/fotoSumitra";
 import type { MitraRow } from "@/lib/sumitra";
 import {
@@ -26,7 +27,11 @@ export default function MitraPanel() {
     if (error) setMsg({ type: "err", text: "Gagal memuat mitra: " + error.message });
     else setItems((data ?? []) as MitraRow[]);
   }, []);
-  const load = useCallback(() => ambil().then(terapkan), [terapkan]);
+  // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
+  const load = useCallback(() => {
+    segarkanHalaman("sumitra");
+    return ambil().then(terapkan);
+  }, [terapkan]);
   useEffect(() => {
     ambil().then(terapkan);
   }, [terapkan]);

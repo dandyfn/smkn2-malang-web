@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { MessageSquareReply, Plus, Save, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { segarkanHalaman } from "@/lib/segarkanHalaman";
 import type { FaqRow } from "@/lib/sumitra";
 import { inputCls, Pesan, StatusBadge, AksiBaris, TayangDanUrutan, type Msg } from "./bersama";
 
@@ -29,7 +30,11 @@ export default function FaqPanel() {
     if (error) setMsg({ type: "err", text: "Gagal memuat FAQ: " + error.message });
     else setItems((data ?? []) as FaqRow[]);
   }, []);
-  const load = useCallback(() => ambil().then(terapkan), [terapkan]);
+  // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
+  const load = useCallback(() => {
+    segarkanHalaman("sumitra");
+    return ambil().then(terapkan);
+  }, [terapkan]);
 
   useEffect(() => {
     ambil().then(terapkan);

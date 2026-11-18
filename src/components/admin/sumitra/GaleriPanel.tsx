@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Camera, Eye, EyeOff, Trash2, Upload } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { segarkanHalaman } from "@/lib/segarkanHalaman";
 import { hapusFotoSumitra, unggahFotoSumitra } from "@/lib/fotoSumitra";
 import type { GaleriRow } from "@/lib/sumitra";
 import { inputCls, labelCls, kartu, tombolUtama, Pesan, type Msg, type HasilKueri } from "./bersama";
@@ -26,7 +27,11 @@ export default function GaleriPanel({ isAdmin, userId }: { isAdmin: boolean; use
     if (error) setMsg({ type: "err", text: "Gagal memuat galeri: " + error.message });
     else setItems((data ?? []) as GaleriRow[]);
   }, []);
-  const load = useCallback(() => ambil().then(terapkan), [terapkan]);
+  // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
+  const load = useCallback(() => {
+    segarkanHalaman("sumitra");
+    return ambil().then(terapkan);
+  }, [terapkan]);
   useEffect(() => {
     ambil().then(terapkan);
     ambilPaket().then(({ data }) => setPaket((data ?? []) as { id: string; nama: string }[]));

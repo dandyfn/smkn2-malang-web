@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Check, MessageSquareReply, Save, Star, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { segarkanHalaman } from "@/lib/segarkanHalaman";
 import { hapusFotoSumitra } from "@/lib/fotoSumitra";
 import type { TestimoniRow } from "@/lib/sumitra";
 import { inputCls, kartu, Pesan, StatusBadge, PilFilter, formatWaktu, type Msg, type HasilKueri } from "./bersama";
@@ -24,7 +25,11 @@ export default function TestimoniPanel() {
     if (error) setMsg({ type: "err", text: "Gagal memuat testimoni: " + error.message });
     else setItems((data ?? []) as TestimoniRow[]);
   }, []);
-  const load = useCallback(() => ambil().then(terapkan), [terapkan]);
+  // Setelah menyimpan: muat ulang daftar & segarkan halaman publik agar perubahan langsung tampil
+  const load = useCallback(() => {
+    segarkanHalaman("sumitra");
+    return ambil().then(terapkan);
+  }, [terapkan]);
   useEffect(() => {
     ambil().then(terapkan);
   }, [terapkan]);
